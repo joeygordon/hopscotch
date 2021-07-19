@@ -11,13 +11,27 @@
 engine.name = 'PolySub'
 
 local sequence = {true, true, false, true, false, true, true, false, "loop"}
+local voices = {
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+}
 
-function firstSequence(seq)
-  -- this will not last
+local key_voice_index = {}
+local voice_count = 1
+local max_voices = 8
+local next = next
+
+function play_sequence(seq, voice)
   i = 1
-
   while true do
     clock.sync(1/4)
+    print(voice)
     print(seq[i])
     if i == #seq then
       i = 1
@@ -34,18 +48,41 @@ function firstSequence(seq)
   end
 end
 
+function find_empty_space()
+  -- cycle through voices and return first available voice
+  for i=1, #voices do
+    if voices[i] == 0 then
+      return i
+    end
+  end
+  return false
+end
+
+
 function init()
   -- initialization stuff
 end
 
 function key(n,z)
   -- key actions: n = number, z = state
-  if n==3 and z==1 then
-    main_clock = clock.run(firstSequence, sequence)
-  end
-
-  if n==2 and z==1 then
-    clock.cancel(main_clock)
+  if n==3 or n==2 then
+    if z==1 then
+      voice_space = find_empty_space()
+      -- start the sequence
+      if voice_space ~= false then
+        print(voice_space)
+        voices[voice_space] = clock.run(play_sequence, sequence, voice_space)
+        key_voice_index[n] = voice_space
+      end
+    else
+      -- kill the sequence
+      voice_space_index = key_voice_index[n]
+      if voice_space_index ~= nil then
+        clock.cancel(voices[voice_space_index])
+        key_voice_index[n] = nil
+        voices[voice_space_index] = 0
+      end
+    end
   end
 end
 
@@ -57,9 +94,9 @@ function redraw()
   -- screen redraw
   screen.clear()
   screen.move(10,10)
-  screen.text("k3 to start sequence")
+  screen.text("press a key to start")
   screen.move(10, 25)
-  screen.text("k2 to stop sequence")
+  screen.text("release to stop")
   screen.update()
 end
 
