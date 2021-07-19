@@ -10,7 +10,8 @@
 
 engine.name = 'PolySub'
 
-local sequence = {true, true, false, true, false, true, true, false, "loop"}
+local sequences = include("lib/sequences")
+
 local voices = {
   0,
   0,
@@ -23,28 +24,18 @@ local voices = {
 }
 
 local key_voice_index = {}
-local voice_count = 1
-local max_voices = 8
 local next = next
 
 function play_sequence(seq, voice)
   i = 1
   while true do
     clock.sync(1/4)
-    print(voice)
     print(seq[i])
     if i == #seq then
       i = 1
     else
       i = i + 1
     end
-
-    -- for i=1,#seq do
-    --   clock.sync(1/4)
-    --   -- engine.hz(i*100)
-    --   print(seq[i])
-    --   if i == #seq
-    -- end
   end
 end
 
@@ -68,15 +59,15 @@ function key(n,z)
   if n==3 or n==2 then
     if z==1 then
       voice_space = find_empty_space()
-      -- start the sequence
+
       if voice_space ~= false then
         print(voice_space)
-        voices[voice_space] = clock.run(play_sequence, sequence, voice_space)
+        voices[voice_space] = clock.run(play_sequence, sequences[1], voice_space)
         key_voice_index[n] = voice_space
       end
     else
-      -- kill the sequence
       voice_space_index = key_voice_index[n]
+
       if voice_space_index ~= nil then
         clock.cancel(voices[voice_space_index])
         key_voice_index[n] = nil
