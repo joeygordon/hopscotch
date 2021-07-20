@@ -13,14 +13,11 @@ engine.name = 'PolySub'
 local sequences = include("lib/sequences")
 
 local voices = {
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
+  {},
+  {},
+  {},
+  {},
+  {},
 }
 
 local key_voice_index = {}
@@ -41,9 +38,10 @@ end
 
 function find_empty_space()
   -- cycle through voices and return first available voice
-  for i=1, #voices do
-    if voices[i] == 0 then
-      return i
+  for k, v in pairs(voices) do
+    if next(voices[k]) == nil then
+      print('voice found')
+      return k
     end
   end
   return false
@@ -71,7 +69,7 @@ function key(n,z)
       if voice_space_index ~= nil then
         clock.cancel(voices[voice_space_index])
         key_voice_index[n] = nil
-        voices[voice_space_index] = 0
+        voices[voice_space_index] = {}
       end
     end
   end
