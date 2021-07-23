@@ -8,78 +8,74 @@
 -- v0.1.0 by @joeygordon
 -- link to lines eventually
 
-engine.name = 'PolySub'
+-- engine.name = 'PolySub'
+
+
+music = require 'musicutil'
+m = midi.connect()
 
 local sequences = include("lib/sequences")
 local screen_y = 40
 local screen_x_mult = 10
 local positions = {
-  1,
-  1,
-  1,
-  1,
+  "_",
+  "_",
+  "_",
+  "_",
 }
-
-music = require 'musicutil'
-m = midi.connect()
-
 local voices = {
-  {
-    Sequence = sequences[1], 
-    Note = nil,
-    Channel = 1,
-    Available = true,
-    Length = 10,
-    Clock={}
+  [1] = {
+    sequence = sequences[1], 
+    note = nil,
+    channel = 1,
+    available = true,
+    length = 10,
+    clock={}
   },
-  {
-    Sequence = sequences[2], 
-    Note = nil,
-    Channel = 1,
-    Available = true,
-    Length = 10,
-    Clock={}
+  [2] = {
+    sequence = sequences[2], 
+    note = nil,
+    channel = 1,
+    available = true,
+    length = 10,
+    clock={}
   },
-  {
-    Sequence = sequences[3], 
-    Note = nil,
-    Channel = 1,
-    Available = true,
-    Length = 10,
-    Clock={}
+  [3] = {
+    sequence = sequences[3], 
+    note = nil,
+    channel = 1,
+    available = true,
+    length = 10,
+    clock={}
   },
-  {
-    Sequence = sequences[4], 
-    Note = nil,
-    Channel = 1,
-    Available = true,
-    Length = 10,
-    Clock={}
+  [4] = {
+    sequence = sequences[4], 
+    note = nil,
+    channel = 1,
+    available = true,
+    length = 10,
+    clock={}
   },
 }
-
-local key_voice_index = {}
-local next = next
 
 function play_sequence(seq, voice)
-  i = 1
   while true do
-    clock.sync(1/4)
-    if i == #seq then
-      i = 1
-    else
-      i = i + 1
+    for i=1, #seq do
+      clock.sync(1/4)
+      if seq[i] == 1 then
+        positions[voice] = "*"
+      else
+        positions[voice] = "_"
+      end
+      redraw()
     end
-    positions[voice] = i
-    redraw()
   end
 end
 
 function find_empty_space()
   -- cycle through voices and return first available voice
-  for k, v in pairs(voices) do
-    if next(voices[k]) == nil then
-      print('voice found')
+  for k, v in ipairs(voices) do
+    if voices[k]["note"] == nil then
       return k
     end
   end
@@ -104,19 +100,22 @@ end
 
 function key(n,z)
   -- key actions: n = number, z = state
-  if n==3 or n==2 then
+  if n==3 or n==2 or n==1 then
     if z==1 then
       voice_space = find_empty_space()
 
       if voice_space ~= false then
-        voices[voice_space][Note] = n
-        voices[voice_space][Clock] = clock.run(play_sequence, sequences[1], voice_space)
+        print('space', n, voice_space)
+        voices[voice_space]["note"] = n
+        voices[voice_space]["clock"] = clock.run(play_sequence, voices[voice_space]["sequence"] , voice_space)
       end
     else
       for k, v in pairs(voices) do
-        if v[Note] == n do
-          clock.cancel(voices[k][Clock])
-          voices[k][Note] = nil
+        if v["note"] == n then
+          clock.cancel(voices[k]["clock"])
+          voices[k]["note"] = nil
+          positions[k] = "_"
+          redraw()
         end
       end
     end
