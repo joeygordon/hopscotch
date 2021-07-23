@@ -120,7 +120,7 @@ end
 function find_empty_space()
   -- cycle through voices and return first available voice
   for k, v in ipairs(voices) do
-    if voices[k]["note"] == nil then
+    if voices[k]["available"] == true then
       return k
     end
   end
@@ -139,6 +139,7 @@ m.event = function(data)
   if d.type == "note_on" then
     voice_space = find_empty_space()
     voices[voice_space]["note"] = d.note
+    voices[voice_space]["available"] = false
     voices[voice_space]["velocity"] = d.vel
     voices[voice_space]["clock"] = clock.run(play_sequence, voices[voice_space]["sequence"] , voice_space)
   elseif d.type == "note_off" then
@@ -146,6 +147,7 @@ m.event = function(data)
     for k, v in pairs(voices) do
       if v["note"] == d.note then
         clock.cancel(voices[k]["clock"])
+        voices[k]["available"] = true
         voices[k]["note"] = nil
         voices[k]["velocity"] = 0
         positions[k] = "_"
