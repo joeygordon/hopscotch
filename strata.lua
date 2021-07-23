@@ -1,5 +1,5 @@
---
 -- Strata
+-- 
 -- big-time Stratus ripoff
 -- (for now)
 --
@@ -11,6 +11,15 @@
 engine.name = 'PolySub'
 
 local sequences = include("lib/sequences")
+local screen_y = 40
+local screen_x_mult = 10
+local positions = {
+  1,
+  1,
+  1,
+  1,
+}
+
 music = require 'musicutil'
 m = midi.connect()
 
@@ -20,24 +29,28 @@ local voices = {
     Note = nil,
     Channel = 1,
     Available = true,
+    Length = 10,
   },
   {
     Sequence = sequences[2], 
     Note = nil,
     Channel = 1,
     Available = true,
+    Length = 10,
   },
   {
     Sequence = sequences[3], 
     Note = nil,
     Channel = 1,
     Available = true,
+    Length = 10,
   },
   {
     Sequence = sequences[4], 
     Note = nil,
     Channel = 1,
     Available = true,
+    Length = 10,
   },
 }
 
@@ -54,6 +67,8 @@ function play_sequence(seq, voice)
     else
       i = i + 1
     end
+    positions[voice] = i
+    redraw()
   end
 end
 
@@ -114,10 +129,14 @@ end
 function redraw()
   -- screen redraw
   screen.clear()
-  screen.move(10,10)
-  screen.text("press a key to start")
-  screen.move(10, 25)
-  screen.text("release to stop")
+  screen.move(screen_x_mult * 1,screen_y)
+  screen.text(positions[1])
+  screen.move(screen_x_mult * 2, screen_y)
+  screen.text(positions[2])
+  screen.move(screen_x_mult * 3,screen_y)
+  screen.text(positions[3])
+  screen.move(screen_x_mult * 4, screen_y)
+  screen.text(positions[4])
   screen.update()
 end
 
