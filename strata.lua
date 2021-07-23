@@ -11,13 +11,34 @@
 engine.name = 'PolySub'
 
 local sequences = include("lib/sequences")
+music = require 'musicutil'
+m = midi.connect()
 
 local voices = {
-  {},
-  {},
-  {},
-  {},
-  {},
+  {
+    Sequence = sequences[1], 
+    Note = nil,
+    Channel = 1,
+    Available = true,
+  },
+  {
+    Sequence = sequences[2], 
+    Note = nil,
+    Channel = 1,
+    Available = true,
+  },
+  {
+    Sequence = sequences[3], 
+    Note = nil,
+    Channel = 1,
+    Available = true,
+  },
+  {
+    Sequence = sequences[4], 
+    Note = nil,
+    Channel = 1,
+    Available = true,
+  },
 }
 
 local key_voice_index = {}
@@ -52,28 +73,39 @@ function init()
   -- initialization stuff
 end
 
-function key(n,z)
-  -- key actions: n = number, z = state
-  if n==3 or n==2 then
-    if z==1 then
-      voice_space = find_empty_space()
-
-      if voice_space ~= false then
-        print(voice_space)
-        voices[voice_space] = clock.run(play_sequence, sequences[1], voice_space)
-        key_voice_index[n] = voice_space
-      end
-    else
-      voice_space_index = key_voice_index[n]
-
-      if voice_space_index ~= nil then
-        clock.cancel(voices[voice_space_index])
-        key_voice_index[n] = nil
-        voices[voice_space_index] = {}
-      end
-    end
+-- midi things
+m.event = function(data)
+  local d = midi.to_msg(data)
+  if d.type == "note_on" then
+    engine.amp(d.vel / 127)
+    engine.hz(music.note_num_to_freq(d.note))
+  elseif d.type == "note_off" then
+    -- note off things
   end
 end
+
+-- function key(n,z)
+--   -- key actions: n = number, z = state
+--   if n==3 or n==2 then
+--     if z==1 then
+--       voice_space = find_empty_space()
+
+--       if voice_space ~= false then
+--         print(voice_space)
+--         voices[voice_space] = clock.run(play_sequence, sequences[1], voice_space)
+--         key_voice_index[n] = voice_space
+--       end
+--     else
+--       voice_space_index = key_voice_index[n]
+
+--       if voice_space_index ~= nil then
+--         clock.cancel(voices[voice_space_index])
+--         key_voice_index[n] = nil
+--         voices[voice_space_index] = {}
+--       end
+--     end
+--   end
+-- end
 
 function enc(n,d)
   -- encoder actions: n = number, d = delta
