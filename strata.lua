@@ -30,6 +30,7 @@ local voices = {
     Channel = 1,
     Available = true,
     Length = 10,
+    Clock={}
   },
   {
     Sequence = sequences[2], 
@@ -37,6 +38,7 @@ local voices = {
     Channel = 1,
     Available = true,
     Length = 10,
+    Clock={}
   },
   {
     Sequence = sequences[3], 
@@ -44,6 +46,7 @@ local voices = {
     Channel = 1,
     Available = true,
     Length = 10,
+    Clock={}
   },
   {
     Sequence = sequences[4], 
@@ -51,6 +54,7 @@ local voices = {
     Channel = 1,
     Available = true,
     Length = 10,
+    Clock={}
   },
 }
 
@@ -61,7 +65,6 @@ function play_sequence(seq, voice)
   i = 1
   while true do
     clock.sync(1/4)
-    print(seq[i])
     if i == #seq then
       i = 1
     else
@@ -92,35 +95,33 @@ end
 m.event = function(data)
   local d = midi.to_msg(data)
   if d.type == "note_on" then
-    engine.amp(d.vel / 127)
-    engine.hz(music.note_num_to_freq(d.note))
+    -- engine.amp(d.vel / 127)
+    -- engine.hz(music.note_num_to_freq(d.note))
   elseif d.type == "note_off" then
     -- note off things
   end
 end
 
--- function key(n,z)
---   -- key actions: n = number, z = state
---   if n==3 or n==2 then
---     if z==1 then
---       voice_space = find_empty_space()
+function key(n,z)
+  -- key actions: n = number, z = state
+  if n==3 or n==2 then
+    if z==1 then
+      voice_space = find_empty_space()
 
---       if voice_space ~= false then
---         print(voice_space)
---         voices[voice_space] = clock.run(play_sequence, sequences[1], voice_space)
---         key_voice_index[n] = voice_space
---       end
---     else
---       voice_space_index = key_voice_index[n]
-
---       if voice_space_index ~= nil then
---         clock.cancel(voices[voice_space_index])
---         key_voice_index[n] = nil
---         voices[voice_space_index] = {}
---       end
---     end
---   end
--- end
+      if voice_space ~= false then
+        voices[voice_space][Note] = n
+        voices[voice_space][Clock] = clock.run(play_sequence, sequences[1], voice_space)
+      end
+    else
+      for k, v in pairs(voices) do
+        if v[Note] == n do
+          clock.cancel(voices[k][Clock])
+          voices[k][Note] = nil
+        end
+      end
+    end
+  end
+end
 
 function enc(n,d)
   -- encoder actions: n = number, d = delta
