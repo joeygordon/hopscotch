@@ -8,8 +8,7 @@
 -- v0.1.0 by @joeygordon
 -- link to lines eventually
 
--- engine.name = 'PolySub'
-
+engine.name = 'PolyPerc'
 
 music = require 'musicutil'
 m = midi.connect()
@@ -22,35 +21,79 @@ local positions = {
   "_",
   "_",
   "_",
+  "_",
+  "_",
+  "_",
+  "_",
 }
 local voices = {
-  [1] = {
+  {
     sequence = sequences[1], 
     note = nil,
+    velocity = 60,
     channel = 1,
     available = true,
     length = 10,
     clock={}
   },
-  [2] = {
+  {
     sequence = sequences[2], 
     note = nil,
+    velocity = 60,
     channel = 1,
     available = true,
     length = 10,
     clock={}
   },
-  [3] = {
+  {
     sequence = sequences[3], 
     note = nil,
+    velocity = 60,
     channel = 1,
     available = true,
     length = 10,
     clock={}
   },
-  [4] = {
+  {
     sequence = sequences[4], 
     note = nil,
+    velocity = 60,
+    channel = 1,
+    available = true,
+    length = 10,
+    clock={}
+  },
+  {
+    sequence = sequences[5], 
+    note = nil,
+    velocity = 60,
+    channel = 1,
+    available = true,
+    length = 10,
+    clock={}
+  },
+  {
+    sequence = sequences[6], 
+    note = nil,
+    velocity = 60,
+    channel = 1,
+    available = true,
+    length = 10,
+    clock={}
+  },
+  {
+    sequence = sequences[7], 
+    note = nil,
+    velocity = 60,
+    channel = 1,
+    available = true,
+    length = 10,
+    clock={}
+  },
+  {
+    sequence = sequences[8], 
+    note = nil,
+    velocity = 60,
     channel = 1,
     available = true,
     length = 10,
@@ -64,6 +107,8 @@ function play_sequence(seq, voice)
       clock.sync(1/4)
       if seq[i] == 1 then
         positions[voice] = "*"
+        engine.amp(voices[voice]["velocity"] / 127)
+        engine.hz(music.note_num_to_freq(voices[voice]["note"]))
       else
         positions[voice] = "_"
       end
@@ -90,11 +135,23 @@ end
 -- midi things
 m.event = function(data)
   local d = midi.to_msg(data)
+  print(d)
   if d.type == "note_on" then
-    -- engine.amp(d.vel / 127)
-    -- engine.hz(music.note_num_to_freq(d.note))
+    voice_space = find_empty_space()
+    voices[voice_space]["note"] = d.note
+    voices[voice_space]["velocity"] = d.vel
+    voices[voice_space]["clock"] = clock.run(play_sequence, voices[voice_space]["sequence"] , voice_space)
   elseif d.type == "note_off" then
     -- note off things
+    for k, v in pairs(voices) do
+      if v["note"] == d.note then
+        clock.cancel(voices[k]["clock"])
+        voices[k]["note"] = nil
+        voices[k]["velocity"] = 0
+        positions[k] = "_"
+        redraw()
+      end
+    end
   end
 end
 
@@ -137,6 +194,14 @@ function redraw()
   screen.text(positions[3])
   screen.move(screen_x_mult * 4, screen_y)
   screen.text(positions[4])
+  screen.move(screen_x_mult * 5, screen_y)
+  screen.text(positions[5])
+  screen.move(screen_x_mult * 6, screen_y)
+  screen.text(positions[6])
+  screen.move(screen_x_mult * 7, screen_y)
+  screen.text(positions[7])
+  screen.move(screen_x_mult * 8, screen_y)
+  screen.text(positions[8])
   screen.update()
 end
 
