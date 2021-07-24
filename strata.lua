@@ -9,8 +9,10 @@
 -- link to lines eventually
 
 engine.name = 'PolyPerc'
+engine.cutoff(1000)
 
 music = require 'musicutil'
+utils = include 'lib/utils'
 m = midi.connect()
 
 
@@ -27,19 +29,28 @@ local voice_status = {
   "_",
   "_",
 }
+local clock_division = 1/4
+local grid_lock = true
+
 
 function play_sequence(seq, voice)
   while true do
     for i=1, #seq do
-      clock.sync(1/4)
       if seq[i] == 1 then
         voice_status[voice] = "*"
+        note_val = utils.percentageChance(20) and (voices[voice]["note"] + utils.randomOctave()) or voices[voice]["note"]
+        engine.hz(music.note_num_to_freq(note_val))
         engine.amp(voices[voice]["velocity"] / 127)
-        engine.hz(music.note_num_to_freq(voices[voice]["note"]))
+        -- m:note_on(voices[voice]["note"], voices[voice]["velocity"], 2)
       else
         voice_status[voice] = "_"
       end
       redraw()
+      if grid_lock == true then
+        clock.sync(clock_division)
+      else 
+        clock.sleep(clock.get_beat_sec() / 4)
+      end
     end
   end
 end
