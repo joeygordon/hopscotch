@@ -85,23 +85,11 @@ end
 
 function key(n,z)
   -- key actions: n = number, z = state
-  if n==3 or n==2 or n==1 then
+  if n==3 then
     if z==1 then
-      voice_space = find_empty_space()
-
-      if voice_space ~= false then
-        voices[voice_space]["note"] = n
-        voices[voice_space]["clock"] = clock.run(play_sequence, voices[voice_space]["sequence"] , voice_space)
-      end
+      -- on key down
     else
-      for k, v in pairs(voices) do
-        if v["note"] == n then
-          clock.cancel(voices[k]["clock"])
-          voices[k]["note"] = nil
-          voice_status[k] = "_"
-          redraw()
-        end
-      end
+      -- on key up
     end
   end
 end
