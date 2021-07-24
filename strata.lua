@@ -9,7 +9,8 @@
 -- link to lines eventually
 
 engine.name = 'PolyPerc'
-engine.cutoff(1000)
+-- why doesn't that work?
+-- engine.cutoff(1000)
 
 music = require 'musicutil'
 utils = include 'lib/utils'
@@ -17,8 +18,8 @@ m = midi.connect()
 
 
 local voices = include("lib/voices")
-local screen_y = 40
-local screen_x_mult = 10
+local screen_y = 35
+local screen_x_mult = 13
 local voice_status = {
   "_",
   "_",
@@ -31,6 +32,7 @@ local voice_status = {
 }
 local clock_division = 1/4
 local grid_lock = true
+local mode = 0
 
 
 function play_sequence(seq, voice)
@@ -107,27 +109,45 @@ end
 
 function enc(n,d)
   -- encoder actions: n = number, d = delta
+  if n == 1 then
+    -- swtich mode to settings screen and back
+    print("delta" ..d)
+    if d > 0 then
+      mode = 1
+    else
+      mode = 0
+    end
+    redraw()
+  end
 end
 
 function redraw()
   -- screen redraw
   screen.clear()
-  screen.move(screen_x_mult * 1,screen_y)
-  screen.text(voice_status[1])
-  screen.move(screen_x_mult * 2, screen_y)
-  screen.text(voice_status[2])
-  screen.move(screen_x_mult * 3,screen_y)
-  screen.text(voice_status[3])
-  screen.move(screen_x_mult * 4, screen_y)
-  screen.text(voice_status[4])
-  screen.move(screen_x_mult * 5, screen_y)
-  screen.text(voice_status[5])
-  screen.move(screen_x_mult * 6, screen_y)
-  screen.text(voice_status[6])
-  screen.move(screen_x_mult * 7, screen_y)
-  screen.text(voice_status[7])
-  screen.move(screen_x_mult * 8, screen_y)
-  screen.text(voice_status[8])
+
+  -- main screen
+  if mode == 0 then 
+    screen.move(screen_x_mult * 1,screen_y)
+    screen.text(voice_status[1])
+    screen.move(screen_x_mult * 2, screen_y)
+    screen.text(voice_status[2])
+    screen.move(screen_x_mult * 3,screen_y)
+    screen.text(voice_status[3])
+    screen.move(screen_x_mult * 4, screen_y)
+    screen.text(voice_status[4])
+    screen.move(screen_x_mult * 5, screen_y)
+    screen.text(voice_status[5])
+    screen.move(screen_x_mult * 6, screen_y)
+    screen.text(voice_status[6])
+    screen.move(screen_x_mult * 7, screen_y)
+    screen.text(voice_status[7])
+    screen.move(screen_x_mult * 8, screen_y)
+    screen.text(voice_status[8])
+  -- settings screen
+  elseif mode == 1 then
+    screen.move(screen_x_mult * 1,screen_y)
+    screen.text("settings screen")
+  end
   screen.update()
 end
 
