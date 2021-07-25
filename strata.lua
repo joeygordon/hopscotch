@@ -9,17 +9,18 @@
 -- link to lines eventually
 
 engine.name = 'PolyPerc'
--- why doesn't that work?
+-- why doesn't this work?
 -- engine.cutoff(1000)
 
 music = require 'musicutil'
 utils = include 'lib/utils'
-m = midi.connect()
-
+interface = include 'lib/interface'
+m = midi.connect(1)
+o = midi.connect(2)
 
 local voices = include("lib/voices")
 local screen_y = 35
-local screen_x_mult = 13
+local screen_x_mult = 14
 local voice_status = {
   "_",
   "_",
@@ -32,18 +33,33 @@ local voice_status = {
 }
 local clock_division = 1/4
 local grid_lock = true
-local mode = 0
+local page = 0
+local output_mode = 1
 
+function play_note(note, vel)
+  if output_mode == 0 then
+    engine.hz(music.note_num_to_freq(note))
+    engine.amp(vel / 127)
+  elseif output_mode == 1 then
+    o:note_on(note, vel, 2)
+    clock.run(kill_note, note, vel)
+  end
+end
+
+function kill_note(note, vel)
+  clock.sleep(0.5)
+  o:note_off(note, vel, 2)
+end
 
 function play_sequence(seq, voice)
   while true do
     for i=1, #seq do
       if seq[i] == 1 then
         voice_status[voice] = "*"
-        note_val = utils.percentageChance(20) and (voices[voice]["note"] + utils.randomOctave()) or voices[voice]["note"]
-        engine.hz(music.note_num_to_freq(note_val))
-        engine.amp(voices[voice]["velocity"] / 127)
-        -- m:note_on(voices[voice]["note"], voices[voice]["velocity"], 2)
+        note_val = utils.percentageChance(20) and 
+          (voices[voice]["note"] + utils.randomOctave()) or 
+          voices[voice]["note"]
+        play_note(note_val, voices[voice]["velocity"], clock)
       else
         voice_status[voice] = "_"
       end
@@ -67,6 +83,15 @@ function find_empty_space()
   return false
 end
 
+function toggle_output()
+  if output_mode == 0 then
+    output_mode = 1
+  else
+    output_mode = 0
+  end
+  redraw()
+end
+
 
 function init()
   -- initialization stuff
@@ -84,7 +109,7 @@ m.event = function(data)
   elseif d.type == "note_off" then
     -- note off things
     for k, v in pairs(voices) do
-      if v["note"] == d.note then
+      if v["note"] == d.note then=
         clock.cancel(voices[k]["clock"])
         voices[k]["available"] = true
         voices[k]["note"] = nil
@@ -101,6 +126,7 @@ function key(n,z)
   if n==3 then
     if z==1 then
       -- on key down
+      toggle_output()
     else
       -- on key up
     end
@@ -111,12 +137,7 @@ function enc(n,d)
   -- encoder actions: n = number, d = delta
   if n == 1 then
     -- swtich mode to settings screen and back
-    print("delta" ..d)
-    if d > 0 then
-      mode = 1
-    else
-      mode = 0
-    end
+    page = util.clamp(d, 0, 1)
     redraw()
   end
 end
@@ -126,28 +147,41 @@ function redraw()
   screen.clear()
 
   -- main screen
-  if mode == 0 then 
-    screen.move(screen_x_mult * 1,screen_y)
+  if page == 0 then 
+    interface.draw_gate()
+    -- hold status
+    screen.level(1)
+    screen.line_width(1)
+    screen.rect(107, 2, 20, 6)
+    screen.stroke()
+
+    -- sequence things
+    screen.level(15)
+    screen.move(screen_x_mult - 3,screen_y)
     screen.text(voice_status[1])
-    screen.move(screen_x_mult * 2, screen_y)
+    screen.move((screen_x_mult * 2) - 3, screen_y)
     screen.text(voice_status[2])
-    screen.move(screen_x_mult * 3,screen_y)
+    screen.move((screen_x_mult * 3) - 3,screen_y)
     screen.text(voice_status[3])
-    screen.move(screen_x_mult * 4, screen_y)
+    screen.move((screen_x_mult * 4) - 3, screen_y)
     screen.text(voice_status[4])
-    screen.move(screen_x_mult * 5, screen_y)
+    screen.move((screen_x_mult * 5) - 3, screen_y)
     screen.text(voice_status[5])
-    screen.move(screen_x_mult * 6, screen_y)
+    screen.move((screen_x_mult * 6) - 3, screen_y)
     screen.text(voice_status[6])
-    screen.move(screen_x_mult * 7, screen_y)
+    screen.move((screen_x_mult * 7) - 3, screen_y)
     screen.text(voice_status[7])
-    screen.move(screen_x_mult * 8, screen_y)
+    screen.move((screen_x_mult * 8) - 3, screen_y)
     screen.text(voice_status[8])
+
+    -- active sequences
+
   -- settings screen
-  elseif mode == 1 then
+  elseif page == 1 then
     screen.move(screen_x_mult * 1,screen_y)
     screen.text("settings screen")
   end
+
   screen.update()
 end
 
