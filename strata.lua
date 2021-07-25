@@ -109,7 +109,7 @@ m.event = function(data)
   elseif d.type == "note_off" then
     -- note off things
     for k, v in pairs(voices) do
-      if v["note"] == d.note then=
+      if v["note"] == d.note then
         clock.cancel(voices[k]["clock"])
         voices[k]["available"] = true
         voices[k]["note"] = nil
