@@ -14,4 +14,11 @@ function interface.draw_gate(mode)
   screen.stroke()
 end
 
+function interface.draw_hold()
+  screen.level(1)
+  screen.line_width(1)
+  screen.rect(107, 2, 20, 6)
+  screen.stroke()
+end
+
 return interface

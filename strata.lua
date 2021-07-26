@@ -142,40 +142,34 @@ function enc(n,d)
   end
 end
 
+function draw_activity()
+  screen.level(15)
+  screen.move(screen_x_mult - 3,screen_y)
+  screen.text(voice_status[1])
+  screen.move((screen_x_mult * 2) - 3, screen_y)
+  screen.text(voice_status[2])
+  screen.move((screen_x_mult * 3) - 3,screen_y)
+  screen.text(voice_status[3])
+  screen.move((screen_x_mult * 4) - 3, screen_y)
+  screen.text(voice_status[4])
+  screen.move((screen_x_mult * 5) - 3, screen_y)
+  screen.text(voice_status[5])
+  screen.move((screen_x_mult * 6) - 3, screen_y)
+  screen.text(voice_status[6])
+  screen.move((screen_x_mult * 7) - 3, screen_y)
+  screen.text(voice_status[7])
+  screen.move((screen_x_mult * 8) - 3, screen_y)
+  screen.text(voice_status[8])
+end
+
 function redraw()
-  -- screen redraw
   screen.clear()
 
   -- main screen
   if page == 0 then 
     interface.draw_gate()
-    -- hold status
-    screen.level(1)
-    screen.line_width(1)
-    screen.rect(107, 2, 20, 6)
-    screen.stroke()
-
-    -- sequence things
-    screen.level(15)
-    screen.move(screen_x_mult - 3,screen_y)
-    screen.text(voice_status[1])
-    screen.move((screen_x_mult * 2) - 3, screen_y)
-    screen.text(voice_status[2])
-    screen.move((screen_x_mult * 3) - 3,screen_y)
-    screen.text(voice_status[3])
-    screen.move((screen_x_mult * 4) - 3, screen_y)
-    screen.text(voice_status[4])
-    screen.move((screen_x_mult * 5) - 3, screen_y)
-    screen.text(voice_status[5])
-    screen.move((screen_x_mult * 6) - 3, screen_y)
-    screen.text(voice_status[6])
-    screen.move((screen_x_mult * 7) - 3, screen_y)
-    screen.text(voice_status[7])
-    screen.move((screen_x_mult * 8) - 3, screen_y)
-    screen.text(voice_status[8])
-
-    -- active sequences
-
+    interface.draw_hold()
+    draw_activity()
   -- settings screen
   elseif page == 1 then
     screen.move(screen_x_mult * 1,screen_y)
