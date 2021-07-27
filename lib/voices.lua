@@ -2,7 +2,7 @@ local sequences = include("lib/sequences")
 
 local voices = {
   {
-    sequence = sequences[1], 
+    sequence = 1, 
     note = nil,
     velocity = 60,
     channel = 1,
@@ -11,7 +11,7 @@ local voices = {
     clock={}
   },
   {
-    sequence = sequences[2], 
+    sequence = 2, 
     note = nil,
     velocity = 60,
     channel = 1,
@@ -20,7 +20,7 @@ local voices = {
     clock={}
   },
   {
-    sequence = sequences[3], 
+    sequence = 3, 
     note = nil,
     velocity = 60,
     channel = 1,
@@ -29,7 +29,7 @@ local voices = {
     clock={}
   },
   {
-    sequence = sequences[4], 
+    sequence = 4, 
     note = nil,
     velocity = 60,
     channel = 1,
@@ -38,7 +38,7 @@ local voices = {
     clock={}
   },
   {
-    sequence = sequences[5], 
+    sequence = 5, 
     note = nil,
     velocity = 60,
     channel = 1,
@@ -47,7 +47,7 @@ local voices = {
     clock={}
   },
   {
-    sequence = sequences[6], 
+    sequence = 6, 
     note = nil,
     velocity = 60,
     channel = 1,
@@ -56,7 +56,7 @@ local voices = {
     clock={}
   },
   {
-    sequence = sequences[7], 
+    sequence = 7, 
     note = nil,
     velocity = 60,
     channel = 1,
@@ -65,7 +65,7 @@ local voices = {
     clock={}
   },
   {
-    sequence = sequences[8], 
+    sequence = 8, 
     note = nil,
     velocity = 60,
     channel = 1,
