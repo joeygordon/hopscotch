@@ -5,7 +5,7 @@ function utils.percentageChance(percent)
 end
 
 function utils.randomOctave()
-  chance = math.random(0,1)
+  local chance = math.random(0,1)
   if chance == 0 then
     return -12
   else

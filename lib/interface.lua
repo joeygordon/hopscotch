@@ -19,15 +19,28 @@ end
 function interface.draw_hold(hold)
   screen.level(1)
   screen.line_width(1)
-  screen.rect(107, 2, 20, 6)
   if hold == true then
-    screen.level(15)
+    screen.level(1)
+    screen.rect(108, 3, 20, 7)
     screen.fill()
+    screen.level(15)
+    screen.rect(107, 2, 20, 7)
+    screen.fill()
+    screen.move(108, 8)
+    screen.level(0)
+    screen.text('HOLD')
+  else
+    screen.level(1)
+    screen.rect(108, 3, 20, 7)
+    screen.fill()
+    screen.move(109, 9)
+    screen.level(0)
+    screen.text('HOLD')
   end
   screen.stroke()
 end
 
-function interface.draw_settings(selected, voices)
+function interface.draw_sequences(selected, voices)
   for i=1, #voices do
     if selected == i then
       screen.level(15)
@@ -45,6 +58,15 @@ function interface.draw_activity(voices, voice_status)
     screen.move((screen_x_mult * i) - 3, screen_y)
     screen.text(voice_status[i])
   end
+end
+
+function interface.draw_settings(shift)
+  screen.move(screen_x_mult * 1,screen_y)
+    if shift == true then
+      screen.text("shifting")
+    else
+      screen.text("settings screen")
+    end
 end
 
 return interface

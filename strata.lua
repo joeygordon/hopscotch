@@ -17,14 +17,20 @@ voices = include 'lib/voices'
 sequences = include 'lib/sequences'
 voice_status = { "_", "_", "_", "_", "_", "_", "_", "_" }
 
+
+local page = 0
+local hold = false
+local shift = false
+local selected = 1
 local clock_division = 4
 local grid_lock = true
-local page = 0
-local shift = 0
 local output_mode = 1
-local hold = false
-local selected = 1
 local gate_length = 0.5
+
+function kill_note(note, vel)
+  clock.sleep(clock.get_beat_sec() / (clock_division * 2))
+  m2:note_off(note, vel, 2)
+end
 
 function play_note(note, vel)
   if output_mode == 0 then
@@ -36,16 +42,11 @@ function play_note(note, vel)
   end
 end
 
-function kill_note(note, vel)
-  clock.sleep(clock.get_beat_sec() / (clock_division * 2))
-  m2:note_off(note, vel, 2)
-end
-
 function play_sequence(seq, voice)
   while true do
     for i=1, #seq do
       if seq[i] == 1 then
-        note_val = utils.percentageChance(20) and 
+        local note_val = utils.percentageChance(20) and 
           (voices[voice]["note"] + utils.randomOctave()) or 
           voices[voice]["note"]
         play_note(note_val, voices[voice]["velocity"], clock)
@@ -64,6 +65,34 @@ function play_sequence(seq, voice)
   end
 end
 
+function release_note(k)
+  clock.cancel(voices[k]["clock"])
+  voices[k]["available"] = true
+  voices[k]["velocity"] = nil
+  voices[k]["note"] = nil
+  voices[k]["hold_release"] = nil
+  voice_status[k] = "_"
+  redraw()
+end
+
+function hold_release()
+  for k, v in pairs(voices) do
+    if v["hold_release"] == true then
+      release_note(k)
+    end
+  end
+end
+
+function toggle_shift()
+  shift = not shift
+  redraw()
+end
+
+function toggle_hold()
+  hold = not hold
+  redraw()
+end
+
 function toggle_output()
   if output_mode == 0 then
     output_mode = 1
@@ -71,10 +100,6 @@ function toggle_output()
     output_mode = 0
   end
   redraw()
-end
-
-function init()
-  -- initialization stuff
 end
 
 -- midi things
@@ -92,20 +117,16 @@ m1.event = function(data)
   elseif d.type == "note_off" then
   
     -- note off things
-    if hold == false then
-      -- if hold isn't on, kill the voice
-      for k, v in pairs(voices) do
-        if v["note"] == d.note then
-          clock.cancel(voices[k]["clock"])
-          voices[k]["available"] = true
-          voices[k]["note"] = nil
-          voices[k]["velocity"] = nil
-          voice_status[k] = "_"
-          redraw()
+    for k, v in pairs(voices) do
+      if v["note"] == d.note then
+        if hold == false then
+          -- if hold isn't on, kill the voice
+          release_note(k)
+        else
+          -- or else mark the voice to be released when hold turned off
+          voices[k]["hold_release"] = true
         end
       end
-    else
-      -- what do we do when hold is on?
     end
   end
 end
@@ -114,24 +135,17 @@ function key(n,z)
   -- key actions: n = number, z = state
   -- shift button
   if n==1 then
-    shift = z
-    redraw()
+    toggle_shift()
   end
 
   -- toggle hold
   if n==2 and z==1 then
-    hold = not hold
-    redraw()
+    toggle_hold()
   end
 
   -- toggle internal synth
-  if n==3 then
-    if z==1 then
-      -- on key down
+  if n==3 and z==1 then
       toggle_output()
-    else
-      -- on key up
-    end
   end
 end
 
@@ -164,15 +178,18 @@ function redraw()
     interface.draw_gate(output_mode)
     interface.draw_hold(hold)
     interface.draw_activity(voices, voice_status)
-    interface.draw_settings(selected, voices)
+    interface.draw_sequences(selected, voices)
 
   -- settings screen
   elseif page == 1 then
-    screen.move(screen_x_mult * 1,screen_y)
-    screen.text("settings screen")
+    interface.draw_settings(shift)
   end
 
   screen.update()
+end
+
+function init()
+  -- initialization stuff
 end
 
 function cleanup()
