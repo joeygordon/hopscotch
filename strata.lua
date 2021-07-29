@@ -1,7 +1,4 @@
 -- Strata
--- 
--- big-time Stratus ripoff
--- (for now)
 --
 -- -----------------------
 --
@@ -11,45 +8,37 @@
 engine.name = 'PolyPerc'
 -- why doesn't this work?
 -- engine.cutoff(1000)
-
+m1 = midi.connect(1)
+m2 = midi.connect(2)
 music = require 'musicutil'
 utils = include 'lib/utils'
 interface = include 'lib/interface'
 voices = include 'lib/voices'
 sequences = include 'lib/sequences'
-m = midi.connect(1)
-o = midi.connect(2)
+voice_status = { "_", "_", "_", "_", "_", "_", "_", "_" }
 
 local clock_division = 4
 local grid_lock = true
 local page = 0
+local shift = 0
 local output_mode = 1
+local hold = false
 local selected = 1
 local gate_length = 0.5
-local voice_status = {
-  "_",
-  "_",
-  "_",
-  "_",
-  "_",
-  "_",
-  "_",
-  "_",
-}
 
 function play_note(note, vel)
   if output_mode == 0 then
     engine.amp(vel / 127)
     engine.hz(music.note_num_to_freq(note))
   elseif output_mode == 1 then
-    o:note_on(note, vel, 2)
+  m2:note_on(note, vel, 2)
     clock.run(kill_note, note, vel)
   end
 end
 
 function kill_note(note, vel)
   clock.sleep(clock.get_beat_sec() / (clock_division * 2))
-  o:note_off(note, vel, 2)
+  m2:note_off(note, vel, 2)
 end
 
 function play_sequence(seq, voice)
@@ -75,16 +64,6 @@ function play_sequence(seq, voice)
   end
 end
 
--- cycle through voices and return first available voice
-function find_empty_space()
-  for k, v in ipairs(voices) do
-    if voices[k]["available"] == true then
-      return k
-    end
-  end
-  return false
-end
-
 function toggle_output()
   if output_mode == 0 then
     output_mode = 1
@@ -99,32 +78,53 @@ function init()
 end
 
 -- midi things
-m.event = function(data)
+m1.event = function(data)
   local d = midi.to_msg(data)
+
+  -- note on things
   if d.type == "note_on" then
-    voice_space = find_empty_space()
+    voice_space = utils.find_empty_space(voices)
     voice_sequence = sequences[voices[voice_space]["sequence"]]
     voices[voice_space]["note"] = d.note
     voices[voice_space]["available"] = false
     voices[voice_space]["velocity"] = d.vel
     voices[voice_space]["clock"] = clock.run(play_sequence, voice_sequence ,voice_space)
   elseif d.type == "note_off" then
+  
     -- note off things
-    for k, v in pairs(voices) do
-      if v["note"] == d.note then
-        clock.cancel(voices[k]["clock"])
-        voices[k]["available"] = true
-        voices[k]["note"] = nil
-        voices[k]["velocity"] = nil
-        voice_status[k] = "_"
-        redraw()
+    if hold == false then
+      -- if hold isn't on, kill the voice
+      for k, v in pairs(voices) do
+        if v["note"] == d.note then
+          clock.cancel(voices[k]["clock"])
+          voices[k]["available"] = true
+          voices[k]["note"] = nil
+          voices[k]["velocity"] = nil
+          voice_status[k] = "_"
+          redraw()
+        end
       end
+    else
+      -- what do we do when hold is on?
     end
   end
 end
 
 function key(n,z)
   -- key actions: n = number, z = state
+  -- shift button
+  if n==1 then
+    shift = z
+    redraw()
+  end
+
+  -- toggle hold
+  if n==2 and z==1 then
+    hold = not hold
+    redraw()
+  end
+
+  -- toggle internal synth
   if n==3 then
     if z==1 then
       -- on key down
@@ -162,7 +162,7 @@ function redraw()
   -- main screen
   if page == 0 then 
     interface.draw_gate(output_mode)
-    interface.draw_hold()
+    interface.draw_hold(hold)
     interface.draw_activity(voices, voice_status)
     interface.draw_settings(selected, voices)
 
