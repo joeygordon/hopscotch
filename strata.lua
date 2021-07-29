@@ -1,13 +1,11 @@
 -- Strata
 --
--- -----------------------
+-- -------------------------------
 --
 -- v0.1.0 by @joeygordon
 -- link to lines eventually
 
 engine.name = 'PolyPerc'
--- why doesn't this work?
--- engine.cutoff(1000)
 m1 = midi.connect(1)
 m2 = midi.connect(2)
 music = require 'musicutil'
@@ -15,17 +13,18 @@ utils = include 'lib/utils'
 interface = include 'lib/interface'
 voices = include 'lib/voices'
 sequences = include 'lib/sequences'
+encoder_actions = include 'lib/encoder_actions'
+key_actions = include 'lib/key_actions'
+
 voice_status = { "_", "_", "_", "_", "_", "_", "_", "_" }
-
-
-local page = 0
-local hold = false
-local shift = false
-local selected = 1
-local clock_division = 4
-local grid_lock = true
-local output_mode = 1
-local gate_length = 0.5
+page = 0
+selected = 1
+hold = false
+shift = false
+clock_division = 4
+grid_lock = true
+output_mode = 1
+gate_length = 0.5
 
 function kill_note(note, vel)
   clock.sleep(clock.get_beat_sec() / (clock_division * 2))
@@ -90,6 +89,9 @@ end
 
 function toggle_hold()
   hold = not hold
+  if hold == false then
+    hold_release()
+  end
   redraw()
 end
 
@@ -114,9 +116,9 @@ m1.event = function(data)
     voices[voice_space]["available"] = false
     voices[voice_space]["velocity"] = d.vel
     voices[voice_space]["clock"] = clock.run(play_sequence, voice_sequence ,voice_space)
+
+  -- note off things
   elseif d.type == "note_off" then
-  
-    -- note off things
     for k, v in pairs(voices) do
       if v["note"] == d.note then
         if hold == false then
@@ -132,42 +134,11 @@ m1.event = function(data)
 end
 
 function key(n,z)
-  -- key actions: n = number, z = state
-  -- shift button
-  if n==1 then
-    toggle_shift()
-  end
-
-  -- toggle hold
-  if n==2 and z==1 then
-    toggle_hold()
-  end
-
-  -- toggle internal synth
-  if n==3 and z==1 then
-      toggle_output()
-  end
+  key_actions.init(n,z)
 end
 
 function enc(n,d)
-  -- encoder actions: n = number, d = delta
-  if n == 1 then
-    -- swtich mode to settings screen and back
-    page = util.clamp(d, 0, 1)
-    redraw()
-  end
-
-  -- select active selected
-  if n == 2 then
-    selected = util.clamp(selected + d, 1, #voices)
-    redraw()
-  end
-
-  -- select active selected
-  if n == 3 then
-    voices[selected].sequence = util.clamp(voices[selected].sequence + d, 1, #sequences)
-    redraw()
-  end
+  encoder_actions.init(n,d)
 end
 
 function redraw()
@@ -190,6 +161,7 @@ end
 
 function init()
   -- initialization stuff
+  engine.cutoff(1000)
 end
 
 function cleanup()
