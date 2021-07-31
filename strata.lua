@@ -21,18 +21,19 @@ glyphs = include 'lib/glyphs'
 
 midi_in = midi.connect(1) -- midi input device
 midi_out = midi.connect(2) -- midi output device
-voice_status = { "_", "_", "_", "_", "_", "_", "_", "_" }
+voice_status = { 0, 0, 0, 0, 0, 0, 0, 0 }
 pages = ui.Pages.new(1, 2)
 selected = 1
 shift = false
-clock_division = 4
 grid_lock = true
+clock_div_options = {'1/32', '1/16', '1/8', '1/4', '1/2', '1'}
+clock_div_values = {32, 16, 8, 4, 2, 1}
 gate_length = 0.5
 gate_options = {'10%', '25%', '33%', '50%', '66%', '75%', '100%'}
 gate_values = {0.10, 0.25, 0.333, 0.5, 0.666, 0.75, 1}
 
 function kill_note(note, vel)
-  clock.sleep(clock.get_beat_sec() / (clock_division * gate_values[params:get('strata_gate_length')]))
+  clock.sleep(clock.get_beat_sec() / (params:get('strata_clock_division') * gate_values[params:get('strata_gate_length')]))
   midi_out:note_off(note, vel, 2)
 end
 
@@ -58,16 +59,16 @@ function play_sequence(seq, voice, vel)
           vel, 
           params:get('strata_v'..voice..'channel')
         )
-        voice_status[voice] = "*"
+        voice_status[voice] = 0
       else
-        voice_status[voice] = "_"
+        voice_status[voice] = 1
       end
       redraw()
       
       if grid_lock == true then
-        clock.sync(1 / clock_division)
+        clock.sync(1 / params:get('strata_clock_division'))
       else 
-        clock.sleep(clock.get_beat_sec() / clock_division)
+        clock.sleep(clock.get_beat_sec() / params:get('strata_clock_division'))
       end
     end
   end
@@ -78,7 +79,7 @@ function release_note(k)
   voices[k]["available"] = true
   voices[k]["note"] = nil
   voices[k]["hold_release"] = nil
-  voice_status[k] = "_"
+  voice_status[k] = 0
   redraw()
 end
 
@@ -155,18 +156,19 @@ function redraw()
 
   -- main screen
   if pages.index == 1 then 
+    interface.draw_clock_div()
     interface.draw_gate()
     interface.draw_hold()
-    interface.draw_activity(voices, voice_status)
+    interface.draw_activity()
     if shift == true then
       interface.draw_channels()
     else
-      interface.draw_sequences(selected, voices)
+      interface.draw_sequences()
     end
 
   -- settings screen
   elseif pages.index == 2 then
-    interface.draw_settings(shift)
+    interface.draw_settings()
   end
 
   screen.update()

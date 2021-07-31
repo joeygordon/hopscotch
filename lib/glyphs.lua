@@ -115,4 +115,25 @@ function glyphs.h(x,y)
   screen.fill()
 end
 
+function glyphs.off(x,y)
+  screen.pixel(x+1, y-4)
+  screen.pixel(x+2, y-4)
+  screen.pixel(x+3, y-4)
+  screen.pixel(x+1, y-3)
+  screen.pixel(x+3, y-3)
+  screen.pixel(x+1, y-2)
+  screen.pixel(x+2, y-2)
+  screen.pixel(x+3, y-2)
+  screen.fill()
+end
+
+function glyphs.on(x,y)
+  screen.pixel(x+2, y-5)
+  screen.pixel(x, y-3)
+  screen.pixel(x+2, y-3)
+  screen.pixel(x+4, y-3)
+  screen.pixel(x+2, y-1)
+  screen.fill()
+end
+
 return glyphs

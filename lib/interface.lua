@@ -5,6 +5,12 @@ local interface = {}
 local screen_y = 35
 local screen_x_mult = 14
 
+function interface.draw_clock_div()
+  screen.level(1)
+  screen.move(1, 9)
+  screen.text(clock_div_options[params:get('strata_clock_division')])
+end
+
 function interface.draw_gate()
   -- gate length
   screen.level(1)
@@ -44,7 +50,7 @@ function interface.draw_hold()
   screen.stroke()
 end
 
-function interface.draw_sequences(selected, voices)
+function interface.draw_sequences()
   for i=1, #voices do
     if selected == i then
       screen.level(15)
@@ -52,7 +58,7 @@ function interface.draw_sequences(selected, voices)
       screen.level(2)
     end
     local sequence_index = params:get("strata_v"..i.."_sequence")
-    sequences[sequence_index].glyph((screen_x_mult * i) - 3, screen_y + 10)
+    sequences[sequence_index].glyph((screen_x_mult * i) - 3, screen_y + 12)
   end
 end
 
@@ -63,20 +69,23 @@ function interface.draw_channels()
     else
       screen.level(2)
     end
-    screen.move((screen_x_mult * i) - 3, screen_y + 10)
+    screen.move((screen_x_mult * i) - 3, screen_y + 12)
     screen.text(params:get("strata_v"..i.."_channel"))
   end
 end
 
-function interface.draw_activity(voices, voice_status)
+function interface.draw_activity()
   screen.level(15)
   for i=1, #voices do
-    screen.move((screen_x_mult * i) - 3, screen_y)
-    screen.text(voice_status[i])
+    if voice_status[i] == 0 then
+      glyphs.off((screen_x_mult * i) - 3, screen_y)
+    elseif voice_status[i] == 1 then
+      glyphs.on((screen_x_mult * i) - 3, screen_y)
+    end
   end
 end
 
-function interface.draw_settings(shift)
+function interface.draw_settings()
   screen.move(screen_x_mult * 1,screen_y)
     if shift == true then
       screen.text("shifting")
