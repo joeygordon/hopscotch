@@ -1,4 +1,5 @@
 local encoder_actions = {}
+-- do things with the encoders
 
 function encoder_actions.init(n,d)
   -- encoder actions: n = number, d = delta

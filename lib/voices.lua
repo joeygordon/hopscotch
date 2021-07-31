@@ -1,3 +1,5 @@
+-- all of the main voices
+
 local sequences = include("lib/sequences")
 
 local voices = {

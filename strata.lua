@@ -10,6 +10,7 @@ engine.name = 'PolyPerc'
 music = require 'musicutil'
 ui = require 'ui'
 
+parameters = include 'lib/parameters'
 utils = include 'lib/utils'
 interface = include 'lib/interface'
 voices = include 'lib/voices'
@@ -177,83 +178,11 @@ function init()
   norns.enc.sens(3,6)
 
   -- params
-  params:add_separator('Strata')
-  params:add_binary('strata_hold', 'hold', 'toggle')
-  params:add_option('strata_output', 'Output Device', {'midi', 'internal'}, 1)
-  -- params:add_group('Sequences', 8)
-  params:add_option('strata_v1_sequence', 'Voice 1 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 1)
-  params:add_option('strata_v2_sequence', 'Voice 2 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 2)
-  params:add_option('strata_v3_sequence', 'Voice 3 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 3)
-  params:add_option('strata_v4_sequence', 'Voice 4 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 4)
-  params:add_option('strata_v5_sequence', 'Voice 5 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 5)
-  params:add_option('strata_v6_sequence', 'Voice 6 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 6)
-  params:add_option('strata_v7_sequence', 'Voice 7 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 7)
-  params:add_option('strata_v8_sequence', 'Voice 8 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 8)
-  params:hide('strata_v1_sequence')
-  params:hide('strata_v2_sequence')
-  params:hide('strata_v3_sequence')
-  params:hide('strata_v4_sequence')
-  params:hide('strata_v5_sequence')
-  params:hide('strata_v6_sequence')
-  params:hide('strata_v7_sequence')
-  params:hide('strata_v8_sequence')
-  params:add_group('MIDI Channels', 8)
-  params:add_option('strata_v1_channel', 'Voice 1 Channel', {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, 1)
-  params:add_option('strata_v2_channel', 'Voice 2 Channel', {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, 1)
-  params:add_option('strata_v3_channel', 'Voice 3 Channel', {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, 1)
-  params:add_option('strata_v4_channel', 'Voice 4 Channel', {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, 1)
-  params:add_option('strata_v5_channel', 'Voice 5 Channel', {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, 1)
-  params:add_option('strata_v6_channel', 'Voice 6 Channel', {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, 1)
-  params:add_option('strata_v7_channel', 'Voice 7 Channel', {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, 1)
-  params:add_option('strata_v8_channel', 'Voice 8 Channel', {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, 1)
-  
-  params:read()
+  parameters.init()
 end
 
 function cleanup()
   -- deinitialization
   params:write()
+  -- TODO kill all voices
 end
-
--- function savestate()
---   local file = io.open(_path.data .. "strata/strat.data", "w+")
---   io.output(file)
---   io.write("v1" .. "\n")
---   for j = 1, 25 do
---     for i = 1, 8 do
---       io.write(memory_cell[j][i].k .. "\n")
---       io.write(memory_cell[j][i].n .. "\n")
---       io.write(memory_cell[j][i].prob .. "\n")
---       io.write(memory_cell[j][i].trig_logic .. "\n")
---       io.write(memory_cell[j][i].logic_target .. "\n")
---       io.write(memory_cell[j][i].rotation .. "\n")
---       io.write(memory_cell[j][i].mute .. "\n")
---     end
---   end
---   io.close(file)
--- end
-
--- function loadstate()
---   local file = io.open(_path.data .. "foulplay/foulplay-pattern.data", "r")
---   if file then
---     print("datafile found")
---     io.input(file)
---     if io.read() == "v1" then
---       for j = 1, 25 do
---         for i = 1, 8 do
---           memory_cell[j][i].k = tonumber(io.read())
---           memory_cell[j][i].n = tonumber(io.read())
---           memory_cell[j][i].prob = tonumber(io.read())
---           memory_cell[j][i].trig_logic = tonumber(io.read())
---           memory_cell[j][i].logic_target = tonumber(io.read())
---           memory_cell[j][i].rotation = tonumber(io.read())
---           memory_cell[j][i].mute = tonumber(io.read())
---         end
---       end
---     else
---       print("invalid data file")
---     end
---     io.close(file)
---   end
---   for i = 1, 8 do reer(i) end
--- end

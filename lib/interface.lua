@@ -1,3 +1,5 @@
+-- draw stuff on the screen
+
 local interface = {}
 local screen_y = 35
 local screen_x_mult = 14

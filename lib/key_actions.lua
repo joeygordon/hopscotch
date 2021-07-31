@@ -1,3 +1,5 @@
+-- do things when you press the buttons
+
 local key_actions = {}
 
 function key_actions.init(n,z)

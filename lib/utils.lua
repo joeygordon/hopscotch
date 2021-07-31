@@ -1,9 +1,12 @@
+-- handy utilities
+
 local utils = {}
 
 function utils.percentageChance(percent)
   return percent >= math.random(1, 100)
 end
 
+-- shift the note up or down an octave
 function utils.randomOctave()
   local chance = math.random(0,1)
   if chance == 0 then
