@@ -2,11 +2,11 @@ local interface = {}
 local screen_y = 35
 local screen_x_mult = 14
 
-function interface.draw_gate(mode)
+function interface.draw_gate()
   -- gate length
   screen.level(1)
   screen.move(2, 5)
-  if mode == 0 then
+  if params:get('strata_output') == 2 then
     screen.line_width(3)
   else
     screen.line_width(1)
@@ -16,10 +16,10 @@ function interface.draw_gate(mode)
   screen.stroke()
 end
 
-function interface.draw_hold(hold)
+function interface.draw_hold()
   screen.level(1)
   screen.line_width(1)
-  if hold == true then
+  if params:get('strata_hold') == 1 then
     screen.level(1)
     screen.rect(108, 3, 20, 7)
     screen.fill()
@@ -48,7 +48,7 @@ function interface.draw_sequences(selected, voices)
       screen.level(2)
     end
     screen.move((screen_x_mult * i) - 3, screen_y + 10)
-    screen.text(voices[i].sequence)
+    screen.text(params:get("strata_v"..i.."_sequence"))
   end
 end
 
