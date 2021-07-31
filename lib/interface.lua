@@ -1,4 +1,5 @@
 -- draw stuff on the screen
+glyphs = include 'lib/glyphs'
 
 local interface = {}
 local screen_y = 35
@@ -7,15 +8,16 @@ local screen_x_mult = 14
 function interface.draw_gate()
   -- gate length
   screen.level(1)
-  screen.move(2, 5)
   if params:get('strata_output') == 2 then
-    screen.line_width(3)
+    screen.move(88, 9)
+    screen.text('int')
   else
-    screen.line_width(1)
+    screen.move(88, 7)
+    screen.line_width(3)
+    screen.line_rel(15 * gate_values[params:get('strata_gate_length')], 0)
+    screen.close()
+    screen.stroke()
   end
-  screen.line(15, 5)
-  screen.close()
-  screen.stroke()
 end
 
 function interface.draw_hold()
@@ -49,8 +51,8 @@ function interface.draw_sequences(selected, voices)
     else
       screen.level(2)
     end
-    screen.move((screen_x_mult * i) - 3, screen_y + 10)
-    screen.text(params:get("strata_v"..i.."_sequence"))
+    local sequence_index = params:get("strata_v"..i.."_sequence")
+    sequences[sequence_index].glyph((screen_x_mult * i) - 3, screen_y + 10)
   end
 end
 
@@ -81,6 +83,14 @@ function interface.draw_settings(shift)
     else
       screen.text("settings screen")
     end
+    glyphs.a(10,15)
+    glyphs.b(18,15)
+    glyphs.c(26,15)
+    glyphs.d(34,15)
+    glyphs.e(42,15)
+    glyphs.f(50,15)
+    glyphs.g(58,15)
+    glyphs.h(66,15)
 end
 
 return interface

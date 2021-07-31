@@ -17,6 +17,7 @@ voices = include 'lib/voices'
 sequences = include 'lib/sequences'
 encoder_actions = include 'lib/encoder_actions'
 key_actions = include 'lib/key_actions'
+glyphs = include 'lib/glyphs'
 
 midi_in = midi.connect(1) -- midi input device
 midi_out = midi.connect(2) -- midi output device
@@ -27,9 +28,11 @@ shift = false
 clock_division = 4
 grid_lock = true
 gate_length = 0.5
+gate_options = {'10%', '25%', '33%', '50%', '66%', '75%', '100%'}
+gate_values = {0.10, 0.25, 0.333, 0.5, 0.666, 0.75, 1}
 
 function kill_note(note, vel)
-  clock.sleep(clock.get_beat_sec() / (clock_division * 2))
+  clock.sleep(clock.get_beat_sec() / (clock_division * gate_values[params:get('strata_gate_length')]))
   midi_out:note_off(note, vel, 2)
 end
 
@@ -121,7 +124,7 @@ midi_in.event = function(data)
     voice_sequence = sequences[params:get('strata_v'..voice_space..'_sequence')]
     voices[voice_space]["note"] = d.note
     voices[voice_space]["available"] = false
-    voices[voice_space]["clock"] = clock.run(play_sequence, voice_sequence ,voice_space, d.vel)
+    voices[voice_space]["clock"] = clock.run(play_sequence, voice_sequence.steps ,voice_space, d.vel)
 
   -- note off things
   elseif d.type == "note_off" then
