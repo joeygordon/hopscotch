@@ -52,6 +52,18 @@ function interface.draw_sequences(selected, voices)
   end
 end
 
+function interface.draw_channels()
+  for i=1, #voices do
+    if selected == i then
+      screen.level(15)
+    else
+      screen.level(2)
+    end
+    screen.move((screen_x_mult * i) - 3, screen_y + 10)
+    screen.text(params:get("strata_v"..i.."_channel"))
+  end
+end
+
 function interface.draw_activity(voices, voice_status)
   screen.level(15)
   for i=1, #voices do

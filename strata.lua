@@ -154,7 +154,11 @@ function redraw()
     interface.draw_gate()
     interface.draw_hold()
     interface.draw_activity(voices, voice_status)
-    interface.draw_sequences(selected, voices)
+    if shift == true then
+      interface.draw_channels()
+    else
+      interface.draw_sequences(selected, voices)
+    end
 
   -- settings screen
   elseif pages.index == 2 then
@@ -175,8 +179,8 @@ function init()
   -- params
   params:add_separator('Strata')
   params:add_binary('strata_hold', 'hold', 'toggle')
-  params:add_option('strata_output', 'output', {'midi', 'internal'}, 1)
-  params:add_group('Sequences', 8)
+  params:add_option('strata_output', 'Output Device', {'midi', 'internal'}, 1)
+  -- params:add_group('Sequences', 8)
   params:add_option('strata_v1_sequence', 'Voice 1 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 1)
   params:add_option('strata_v2_sequence', 'Voice 2 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 2)
   params:add_option('strata_v3_sequence', 'Voice 3 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 3)
@@ -185,6 +189,14 @@ function init()
   params:add_option('strata_v6_sequence', 'Voice 6 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 6)
   params:add_option('strata_v7_sequence', 'Voice 7 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 7)
   params:add_option('strata_v8_sequence', 'Voice 8 Sequence', {1, 2, 3, 4, 5, 6, 7, 8}, 8)
+  params:hide('strata_v1_sequence')
+  params:hide('strata_v2_sequence')
+  params:hide('strata_v3_sequence')
+  params:hide('strata_v4_sequence')
+  params:hide('strata_v5_sequence')
+  params:hide('strata_v6_sequence')
+  params:hide('strata_v7_sequence')
+  params:hide('strata_v8_sequence')
   params:add_group('MIDI Channels', 8)
   params:add_option('strata_v1_channel', 'Voice 1 Channel', {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, 1)
   params:add_option('strata_v2_channel', 'Voice 2 Channel', {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, 1)
@@ -196,7 +208,6 @@ function init()
   params:add_option('strata_v8_channel', 'Voice 8 Channel', {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, 1)
   
   params:read()
-  -- params:bang()
 end
 
 function cleanup()

@@ -12,12 +12,19 @@ function encoder_actions.init(n,d)
     selected = util.clamp(selected + d, 1, #voices)
   end
 
-  -- select active selected
+  -- choose sequence/channel
   if n == 3 then
-    params:set(
-      "strata_v"..selected.."_sequence", 
-      util.clamp(params:get("strata_v"..selected.."_sequence") + d, 1, #sequences)
-    )
+    if shift == true then
+      params:set(
+        "strata_v"..selected.."_channel", 
+        util.clamp(params:get("strata_v"..selected.."_channel") + d, 1, 16)
+      )
+    else
+      params:set(
+        "strata_v"..selected.."_sequence", 
+        util.clamp(params:get("strata_v"..selected.."_sequence") + d, 1, #sequences)
+      )
+    end
   end
 
   redraw()
