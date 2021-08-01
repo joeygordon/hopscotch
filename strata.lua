@@ -123,6 +123,10 @@ midi_in.event = function(data)
   if d.type == "note_on" then
     voice_space = utils.find_empty_space(voices)
     voice_sequence = sequences[params:get('strata_v'..voice_space..'_sequence')]
+    if voice_sequence.steps == false then
+      local random_i = math.random(1, #sequences - 1)
+      voice_sequence = sequences[random_i].steps
+    end
     voices[voice_space]["note"] = d.note
     voices[voice_space]["available"] = false
     voices[voice_space]["clock"] = clock.run(play_sequence, voice_sequence.steps ,voice_space, d.vel)
@@ -178,9 +182,9 @@ function init()
   -- initialization stuff
   engine.cutoff(1000)
 
-  norns.enc.sens(1,6)
-  norns.enc.sens(2,6)
-  norns.enc.sens(3,6)
+  norns.enc.sens(1,7)
+  norns.enc.sens(2,7)
+  norns.enc.sens(3,7)
 
   -- params
   parameters.init()
