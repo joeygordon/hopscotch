@@ -10,9 +10,9 @@ function key_actions.init(n,z)
   end
 
   -- toggle hold
-  if n==2 and z==1 then
-    toggle_output()
-  end
+  -- if n==2 and z==1 then
+  --   toggle_output()
+  -- end
   
   -- toggle internal synth
   if n==3 and z==1 then

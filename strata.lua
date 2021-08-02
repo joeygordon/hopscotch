@@ -182,9 +182,9 @@ function init()
   -- initialization stuff
   engine.cutoff(1000)
 
-  norns.enc.sens(1,7)
-  norns.enc.sens(2,7)
-  norns.enc.sens(3,7)
+  norns.enc.sens(1,16)
+  norns.enc.sens(2,16)
+  norns.enc.sens(3,16)
 
   -- params
   parameters.init()
