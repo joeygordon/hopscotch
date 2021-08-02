@@ -6,7 +6,12 @@ _name subject to change_
 
 ## Using Strata
 
-Play some notes and Strata will map each note to its own selectable rhythm sequence. Each of the 8 voices can be sent to any MIDI channel.
+Play some notes with a MIDI input device and Strata will map each note to its own selectable rhythm sequence. Each of the 8 voices can be sent to any MIDI channel.
+
+### Hardware requirements
+
+- MIDI device to input notes
+- MIDI device to send output to
 
 ### Select a Sequence
 
