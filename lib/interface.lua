@@ -2,32 +2,53 @@
 glyphs = include 'lib/glyphs'
 
 local interface = {}
-local screen_y = 35
+local screen_y = 29
 local screen_x_mult = 14
 
 function interface.draw_clock_div()
-  screen.level(1)
-  screen.move(1, 9)
+  if selected == #voices + 1 then
+    screen.level(10)
+  else
+    screen.level(2)
+  end
+  screen.move(1, 64)
   screen.text(clock_div_options[params:get('strata_clock_division')])
 end
 
 function interface.draw_gate()
   -- gate length
-  screen.level(1)
+
   if params:get('strata_output') == 2 then
-    screen.move(88, 9)
+    if selected == #voices + 2 then
+      screen.level(10)
+    else
+      screen.level(1)
+    end
+    
+    screen.move(114, 64)
     screen.text('int')
   else
-    screen.move(88, 7)
+    screen.level(1)
+    screen.move(109, 62)
     screen.line_width(3)
-    screen.line_rel(15 * gate_values[params:get('strata_gate_length')], 0)
+    screen.line_rel(19, 0)
+    screen.close()
+    screen.stroke()
+
+    if selected == #voices + 2 then
+      screen.level(10)
+    else
+      screen.level(3)
+    end
+
+    screen.move(109, 62)
+    screen.line_rel(19 * gate_values[params:get('strata_gate_length')], 0)
     screen.close()
     screen.stroke()
   end
 end
 
 function interface.draw_hold()
-  screen.level(1)
   screen.line_width(1)
   if params:get('strata_hold') == 1 then
     screen.level(1)
@@ -69,7 +90,7 @@ function interface.draw_channels()
     else
       screen.level(2)
     end
-    screen.move((screen_x_mult * i) - 3, screen_y + 12)
+    screen.move((screen_x_mult * i) - 2, screen_y + 12)
     screen.text(params:get("strata_v"..i.."_channel"))
   end
 end
