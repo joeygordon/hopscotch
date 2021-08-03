@@ -26,8 +26,8 @@ encoder_actions = include 'lib/encoder_actions'
 key_actions = include 'lib/key_actions'
 glyphs = include 'lib/glyphs'
 
-midi_in = midi.connect(1) -- midi input device
-midi_out = midi.connect(2) -- midi output device
+midi_in = midi.connect(1)
+midi_out = midi.connect(2)
 pages = ui.Pages.new(1, 2)
 selected = 1
 shift = false
@@ -174,6 +174,9 @@ function init()
 
   -- load params
   parameters.init()
+  
+  midi_in = midi.connect(params:get('strata_midi_input'))
+  midi_out = midi.connect(params:get('strata_midi_output'))
 end
 
 function cleanup()

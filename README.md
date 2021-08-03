@@ -15,6 +15,8 @@ Play some notes with a MIDI input device and Strata will map each note to its ow
 - MIDI device to input notes
 - MIDI device to send output to
 
+You can choose input and output devices in the params menu
+
 ### Select a Sequence
 
 Use encoder 2 to select which sequence you would like to modify. Encoder 3 selects the sequence.
