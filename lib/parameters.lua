@@ -1,15 +1,5 @@
 -- params
 
-------------------------------
--- notes and todo lsit
---
--- note: pretty normal params stuff
---
--- todo list: 
---  figure out default params
---  do i actually need any param actions?
-------------------------------
-
 local parameters = {}
 
 function parameters.init() 
@@ -18,7 +8,7 @@ function parameters.init()
   params:add_binary('strata_hold', 'Hold', 'toggle', 0)
   params:hide('strata_hold')
   params:add_option('strata_output', 'Output Device', {'midi', 'internal'}, 1)
-  params:add_option('strata_clock_division', 'Clock Division', clock_div_options, 3)
+  params:add_option('strata_clock_division', 'Clock Division', clock_div_options, 6)
   params:add_option('strata_gate_length', 'Gate Length', gate_options, 4)
   params:add_binary('stata_grid_lock', 'Lock to Grid', 'toggle', 1)
 

@@ -1,7 +1,7 @@
 -- various icons for things
 
 ------------------------------
--- notes and todo lsit
+-- notes
 --
 -- note: i'm not in love with all of these. will revisit.
 --

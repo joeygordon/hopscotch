@@ -19,6 +19,7 @@ ui = require 'ui'
 parameters = include 'lib/parameters'
 utils = include 'lib/utils'
 interface = include 'lib/interface'
+strata_midi = include 'lib/midi'
 voices = include 'lib/voices'
 sequences = include 'lib/sequences'
 encoder_actions = include 'lib/encoder_actions'
@@ -27,29 +28,51 @@ glyphs = include 'lib/glyphs'
 
 midi_in = midi.connect(1) -- midi input device
 midi_out = midi.connect(2) -- midi output device
-voice_status = { 0, 0, 0, 0, 0, 0, 0, 0 }
 pages = ui.Pages.new(1, 2)
 selected = 1
 shift = false
-clock_div_options = {'1/32', '1/16', '1/8', '1/4', '1/2', '1'}
-clock_div_values = {32, 16, 8, 4, 2, 1}
-gate_length = 0.5
-gate_options = {'10%', '25%', '33%', '50%', '66%', '75%', '100%'}
-gate_values = {0.10, 0.25, 0.333, 0.5, 0.666, 0.75, 1}
+voice_status = { 0, 0, 0, 0, 0, 0, 0, 0 }
+clock_div_options = {'1/32', '1/16', '1/12', '1/8', '1/6', '1/4', '1/3', '1/2', '1'}
+clock_div_values = {32, 16, 12, 8, 6, 4, 3, 2, 1}
+gate_options = {'10%', '25%', '33%', '50%', '66%', '75%', '90%', '100%'}
+gate_values = {0.10, 0.25, 0.333, 0.5, 0.666, 0.75, 0.9, 1}
 
-function kill_note(note, vel)
-  clock.sleep(
-    (clock.get_beat_sec() / clock_div_values[params:get('strata_clock_division')]) * gate_values[params:get('strata_gate_length')])
-  midi_out:note_off(note, vel, channel)
+-- toggle settings
+
+function toggle_shift()
+  shift = not shift
+  redraw()
 end
 
+function toggle_hold()
+  if params:get('strata_hold') == 1 then
+    params:set('strata_hold', 0)
+    hold_release()
+  else
+    params:set('strata_hold', 1)
+  end
+  redraw()
+end
+
+function toggle_output()
+  if params:get('strata_output') == 1 then
+    params:set('strata_output', 2)
+  else
+    params:set('strata_output', 1)
+  end 
+  redraw()
+end
+
+-- play sounds
+
 function play_note(note, vel, channel)
-  if params:get('strata_output') == 2 then
+  if params:get('strata_output') == 1 then
+    -- midi output
+    strata_midi.play(note, vel, channel)
+  elseif params:get('strata_output') == 2 then
+    -- internal output
     engine.amp(vel / 127)
     engine.hz(music.note_num_to_freq(note))
-  elseif params:get('strata_output') == 1 then
-    midi_out:note_on(note, vel, channel)
-    clock.run(kill_note, note, vel, channel)
   end
 end
 
@@ -97,63 +120,19 @@ function hold_release()
   end
 end
 
-function toggle_shift()
-  shift = not shift
-  redraw()
-end
-
-function toggle_hold()
-  if params:get('strata_hold') == 1 then
-    params:set('strata_hold', 0)
-    hold_release()
-  else
-    params:set('strata_hold', 1)
-  end
-  redraw()
-end
-
-function toggle_output()
-  if params:get('strata_output') == 1 then
-    params:set('strata_output', 2)
-  else
-    params:set('strata_output', 1)
-  end 
-  redraw()
-end
-
 -- midi things
+
 midi_in.event = function(data)
   local d = midi.to_msg(data)
 
-  -- note on things
   if d.type == "note_on" then
-    local voice_space = utils.find_empty_space(voices)
-    if voice_space ~= false then
-      voice_sequence = sequences[params:get('strata_v'..voice_space..'_sequence')]
-      if voice_sequence.steps == nil then
-        local random_i = math.random(1, #sequences - 1)
-        voice_sequence = sequences[random_i]
-      end
-      voices[voice_space]["note"] = d.note
-      voices[voice_space]["available"] = false
-      voices[voice_space]["clock"] = clock.run(play_sequence, voice_sequence.steps ,voice_space, d.vel)
-    end
-
-  -- note off things
+    strata_midi.note_on()
   elseif d.type == "note_off" then
-    for k, v in pairs(voices) do
-      if v["note"] == d.note then
-        if params:get('strata_hold') == 0 then
-          -- if hold isn't on, kill the voice
-          release_note(k)
-        else
-          -- or else mark the voice to be released when hold turned off
-          voices[k]["hold_release"] = true
-        end
-      end
-    end
+    strata_midi.note_off()
   end
 end
+
+-- interface things
 
 function key(n,z)
   key_actions.init(n,z)
@@ -187,19 +166,17 @@ function redraw()
 end
 
 function init()
-  -- initialization stuff
   engine.cutoff(1000)
 
   norns.enc.sens(1,16)
   norns.enc.sens(2,16)
   norns.enc.sens(3,16)
 
-  -- params
+  -- load params
   parameters.init()
 end
 
 function cleanup()
-  -- deinitialization
   params:write()
-  -- TODO kill all voices
+  strata_midi.kill_all()
 end
