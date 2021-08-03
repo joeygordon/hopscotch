@@ -1,4 +1,4 @@
--- Strata
+-- Hopscotch
 --
 -- -------------------------------
 --
@@ -19,7 +19,7 @@ ui = require 'ui'
 parameters = include 'lib/parameters'
 utils = include 'lib/utils'
 interface = include 'lib/interface'
-strata_midi = include 'lib/midi'
+hs_midi = include 'lib/midi'
 voices = include 'lib/voices'
 sequences = include 'lib/sequences'
 encoder_actions = include 'lib/encoder_actions'
@@ -45,20 +45,20 @@ function toggle_shift()
 end
 
 function toggle_hold()
-  if params:get('strata_hold') == 1 then
-    params:set('strata_hold', 0)
+  if params:get('hs_hold') == 1 then
+    params:set('hs_hold', 0)
     hold_release()
   else
-    params:set('strata_hold', 1)
+    params:set('hs_hold', 1)
   end
   redraw()
 end
 
 function toggle_output()
-  if params:get('strata_output') == 1 then
-    params:set('strata_output', 2)
+  if params:get('hs_output') == 1 then
+    params:set('hs_output', 2)
   else
-    params:set('strata_output', 1)
+    params:set('hs_output', 1)
   end 
   redraw()
 end
@@ -66,10 +66,10 @@ end
 -- play sounds
 
 function play_note(note, vel, channel)
-  if params:get('strata_output') == 1 then
+  if params:get('hs_output') == 1 then
     -- midi output
-    strata_midi.play(note, vel, channel)
-  elseif params:get('strata_output') == 2 then
+    hs_midi.play(note, vel, channel)
+  elseif params:get('hs_output') == 2 then
     -- internal output
     engine.amp(vel / 127)
     engine.hz(music.note_num_to_freq(note))
@@ -86,7 +86,7 @@ function play_sequence(seq, voice, vel)
         play_note(
           note_val, 
           vel, 
-          params:get('strata_v'..voice..'_channel')
+          params:get('hs_v'..voice..'_channel')
         )
         voice_status[voice] = 1
       else
@@ -95,9 +95,9 @@ function play_sequence(seq, voice, vel)
       redraw()
       
       if params:get('stata_grid_lock') == 1 then
-        clock.sync(1 / clock_div_values[params:get('strata_clock_division')])
+        clock.sync(1 / clock_div_values[params:get('hs_clock_division')])
       else 
-        clock.sleep(clock.get_beat_sec() / clock_div_values[params:get('strata_clock_division')])
+        clock.sleep(clock.get_beat_sec() / clock_div_values[params:get('hs_clock_division')])
       end
     end
   end
@@ -126,9 +126,9 @@ midi_in.event = function(data)
   local d = midi.to_msg(data)
 
   if d.type == "note_on" then
-    strata_midi.note_on()
+    hs_midi.note_on()
   elseif d.type == "note_off" then
-    strata_midi.note_off()
+    hs_midi.note_off()
   end
 end
 
@@ -175,11 +175,11 @@ function init()
   -- load params
   parameters.init()
   
-  midi_in = midi.connect(params:get('strata_midi_input'))
-  midi_out = midi.connect(params:get('strata_midi_output'))
+  midi_in = midi.connect(params:get('hs_midi_input'))
+  midi_out = midi.connect(params:get('hs_midi_output'))
 end
 
 function cleanup()
   params:write()
-  strata_midi.kill_all()
+  hs_midi.kill_all()
 end
