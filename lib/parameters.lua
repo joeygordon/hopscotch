@@ -15,11 +15,12 @@ local parameters = {}
 function parameters.init() 
   params:add_separator('Strata')
   -- misc
-  params:add_binary('strata_hold', 'Hold', 'toggle')
+  params:add_binary('strata_hold', 'Hold', 'toggle', 0)
   params:hide('strata_hold')
   params:add_option('strata_output', 'Output Device', {'midi', 'internal'}, 1)
   params:add_option('strata_clock_division', 'Clock Division', clock_div_options, 3)
   params:add_option('strata_gate_length', 'Gate Length', gate_options, 4)
+  params:add_binary('stata_grid_lock', 'Lock to Grid', 'toggle', 1)
 
   -- voice sequences
   params:add_option('strata_v1_sequence', 'Voice 1 Sequence', {1, 2, 3, 4, 5, 6, 7, 8, 9}, 1)

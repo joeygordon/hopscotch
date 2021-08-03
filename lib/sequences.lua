@@ -36,7 +36,7 @@ local sequences = {
   -- random sequence option. MUST BE LAST
   {
     glyph = glyphs.i,
-    steps = false
+    steps = nil
   },
 }
 
