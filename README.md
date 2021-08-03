@@ -2,6 +2,8 @@
 
 _name subject to change_
 
+![](img/strata.png)
+
 8-voice MIDI rhythmic arpeggiator for [norns](https://monome.org/norns/)
 
 ## Using Strata
