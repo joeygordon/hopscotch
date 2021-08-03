@@ -94,7 +94,7 @@ function play_sequence(seq, voice, vel)
       end
       redraw()
       
-      if params:get('stata_grid_lock') == 1 then
+      if params:get('hs_grid_lock') == 1 then
         clock.sync(1 / clock_div_values[params:get('hs_clock_division')])
       else 
         clock.sleep(clock.get_beat_sec() / clock_div_values[params:get('hs_clock_division')])

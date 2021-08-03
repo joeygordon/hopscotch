@@ -11,14 +11,14 @@ function get_midi_devices()
 end
 
 function parameters.init() 
-  params:add_separator('hs')
+  params:add_separator('Hopscotch')
   -- misc
   params:add_binary('hs_hold', 'Hold', 'toggle', 0)
   params:hide('hs_hold')
   params:add_option('hs_output', 'Output Device', {'midi', 'internal'}, 1)
   params:add_option('hs_clock_division', 'Clock Division', clock_div_options, 6)
   params:add_option('hs_gate_length', 'Gate Length', gate_options, 4)
-  params:add_binary('stata_grid_lock', 'Lock to Grid', 'toggle', 1)
+  params:add_binary('hs_grid_lock', 'Lock to Grid', 'toggle', 1)
   params:add_option('hs_midi_input', 'Input', get_midi_devices(), 1)
   params:add_option('hs_midi_output', 'Output', get_midi_devices(), 2)
 
