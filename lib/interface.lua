@@ -13,13 +13,13 @@ function interface.draw_clock_div()
     screen.level(2)
   end
   screen.move(1, 64)
-  screen.text(clock_div_options[params:get('strata_clock_division')])
+  screen.text(clock_div_options[params:get('hs_clock_division')])
 end
 
 function interface.draw_gate()
   -- gate length
 
-  if params:get('strata_output') == 2 then
+  if params:get('hs_output') == 2 then
     if selected == #voices + 2 then
       screen.level(10)
     else
@@ -43,7 +43,7 @@ function interface.draw_gate()
     end
 
     screen.move(109, 62)
-    screen.line_rel(19 * gate_values[params:get('strata_gate_length')], 0)
+    screen.line_rel(19 * gate_values[params:get('hs_gate_length')], 0)
     screen.close()
     screen.stroke()
   end
@@ -51,7 +51,7 @@ end
 
 function interface.draw_hold()
   screen.line_width(1)
-  if params:get('strata_hold') == 1 then
+  if params:get('hs_hold') == 1 then
     screen.level(1)
     screen.rect(108, 3, 20, 7)
     screen.fill()
@@ -79,7 +79,7 @@ function interface.draw_sequences()
     else
       screen.level(2)
     end
-    local sequence_index = params:get("strata_v"..i.."_sequence")
+    local sequence_index = params:get("hs_v"..i.."_sequence")
     sequences[sequence_index].glyph((screen_x_mult * i) - 3, screen_y + 12)
   end
 end
@@ -92,7 +92,7 @@ function interface.draw_channels()
       screen.level(2)
     end
     screen.move((screen_x_mult * i) - 2, screen_y + 12)
-    screen.text(params:get("strata_v"..i.."_channel"))
+    screen.text(params:get("hs_v"..i.."_channel"))
   end
 end
 

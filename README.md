@@ -1,14 +1,12 @@
-# Strata
+# Hopscotch
 
-_name subject to change_
-
-![](img/strata.png)
+![](img/hopscotch.png)
 
 8-voice MIDI rhythmic arpeggiator for [norns](https://monome.org/norns/)
 
-## Using Strata
+## Using Hopscotch
 
-Play some notes with a MIDI input device and Strata will map each note to its own selectable rhythm sequence. Each of the 8 voices can be sent to any MIDI channel.
+Play some notes with a MIDI input device and Hopscotch will map each note to its own selectable rhythm sequence. Each of the 8 voices can be sent to any MIDI channel.
 
 ### Hardware requirements
 
