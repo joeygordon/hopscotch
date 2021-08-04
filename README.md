@@ -19,7 +19,7 @@ You can choose input and output devices in the params menu
 
 Use encoder 2 to select which sequence you would like to modify. Encoder 3 selects the sequence.
 
-The `!` option assigns a random sequence to that channel whenever a new note is played.
+The `!` option assigns a random sequence to that voice whenever a new note is played.
 
 ### Select a MIDI channel
 
