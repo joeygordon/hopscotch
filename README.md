@@ -1,8 +1,8 @@
 # Hopscotch
 
-![](img/hopscotch.png)
-
 8-voice MIDI rhythmic arpeggiator for [norns](https://monome.org/norns/)
+
+![](img/hopscotch.png)
 
 ## Using Hopscotch
 
