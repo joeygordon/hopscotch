@@ -1,6 +1,6 @@
 # Hopscotch
 
-8-voice MIDI rhythmic arpeggiator for [norns](https://monome.org/norns/)
+8-voice MIDI rhythmic arpeggiator for [norns](https://monome.org/norns/). Chat about it over on [lines](https://llllllll.co/t/hopscotch-midi-sequencer-arpeggiator/47655)
 
 ![](img/hopscotch.png)
 
