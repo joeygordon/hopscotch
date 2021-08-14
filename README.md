@@ -23,7 +23,7 @@ The `!` option assigns a random sequence to that voice whenever a new note is pl
 
 ### Select a MIDI channel
 
-Hold shift (key 1) to change the sequencer options to MIDI channels. Select which voice you want to modify with encoder 2, and choose a MIDI channel with encoder 3.
+Hold shift (key 1) to swap the sequencer options with MIDI channel options. Select which voice you want to modify with encoder 2, and choose a MIDI channel with encoder 3.
 
 ## Controls
 
