@@ -126,9 +126,9 @@ midi_in.event = function(data)
   local d = midi.to_msg(data)
 
   if d.type == "note_on" then
-    hs_midi.note_on()
+    hs_midi.note_on(d)
   elseif d.type == "note_off" then
-    hs_midi.note_off()
+    hs_midi.note_off(d)
   end
 end
 
@@ -175,8 +175,8 @@ function init()
   -- load params
   parameters.init()
   
-  midi_in = midi.connect(params:get('hs_midi_input'))
-  midi_out = midi.connect(params:get('hs_midi_output'))
+  -- midi_in = midi.connect(params:get('hs_midi_input'))
+  -- midi_out = midi.connect(params:get('hs_midi_output'))
 end
 
 function cleanup()

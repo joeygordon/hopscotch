@@ -19,8 +19,8 @@ function parameters.init()
   params:add_option('hs_clock_division', 'Clock Division', clock_div_options, 6)
   params:add_option('hs_gate_length', 'Gate Length', gate_options, 4)
   params:add_binary('hs_grid_lock', 'Lock to Grid', 'toggle', 1)
-  params:add_option('hs_midi_input', 'Input', get_midi_devices(), 1)
-  params:add_option('hs_midi_output', 'Output', get_midi_devices(), 2)
+  -- params:add_option('hs_midi_input', 'Input', get_midi_devices(), 1)
+  -- params:add_option('hs_midi_output', 'Output', get_midi_devices(), 2)
 
   -- voice sequences
   params:add_option('hs_v1_sequence', 'Voice 1 Sequence', {1, 2, 3, 4, 5, 6, 7, 8, 9}, 1)

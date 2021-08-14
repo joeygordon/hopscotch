@@ -25,7 +25,7 @@ function hs_midi.kill_all()
   end
 end
 
-function hs_midi.note_on()
+function hs_midi.note_on(d)
   local voice_space = utils.find_empty_space(voices)
 
   if voice_space ~= false then
@@ -40,7 +40,7 @@ function hs_midi.note_on()
     end
 end
 
-function hs_midi.note_off()
+function hs_midi.note_off(d)
   for k, v in pairs(voices) do
     if v["note"] == d.note then
       if params:get('hs_hold') == 0 then
