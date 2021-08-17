@@ -19,11 +19,12 @@ function parameters.init()
   params:add_option('hs_output', 'Output', {'MIDI', 'Internal', 'Just Friends'}, 1)
   params:set_action('hs_output', 
     function(x) 
-      if x == 3
+      if x == 3 then
         crow.ii.jf.mode(1)
       else 
         crow.ii.jf.mode(0)
       end
+    end
   )
   params:add_option('hs_clock_division', 'Clock Division', clock_div_options, 6)
   params:add_option('hs_gate_length', 'Gate Length', gate_options, 4)

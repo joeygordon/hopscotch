@@ -19,10 +19,9 @@ ui = require 'ui'
 parameters = include 'lib/parameters'
 utils = include 'lib/utils'
 interface = include 'lib/interface'
-hs_midi = include 'lib/midi'
-hs_jf = include 'lib/crow'
 voices = include 'lib/voices'
 sequences = include 'lib/sequences'
+note_utils = include 'lib/note_utils'
 encoder_actions = include 'lib/encoder_actions'
 key_actions = include 'lib/key_actions'
 glyphs = include 'lib/glyphs'
@@ -38,38 +37,7 @@ clock_div_values = {32, 16, 12, 8, 6, 4, 3, 2, 1}
 gate_options = {'10%', '25%', '33%', '50%', '66%', '75%', '90%', '100%'}
 gate_values = {0.10, 0.25, 0.333, 0.5, 0.666, 0.75, 0.9, 1}
 
--- toggle settings
-
-function toggle_shift()
-  shift = not shift
-  redraw()
-end
-
-function toggle_hold()
-  if params:get('hs_hold') == 1 then
-    params:set('hs_hold', 0)
-    hold_release()
-  else
-    params:set('hs_hold', 1)
-  end
-  redraw()
-end
-
--- play sounds
-
-function play_note(note, vel, channel, voice)
-  if params:get('hs_output') == 1 then
-    -- midi output
-    hs_midi.play(note, vel, channel)
-  elseif params:get('hs_output') == 2 then
-    -- internal output
-    engine.amp(vel / 127)
-    engine.hz(music.note_num_to_freq(note))
-  elseif params:get('hs_output') == 3 then
-    -- JF output
-    hs_jf.play(note, vel, voice)
-  end
-end
+-- manage sounds state
 
 function play_sequence(seq, voice, vel)
   while true do
@@ -78,7 +46,7 @@ function play_sequence(seq, voice, vel)
         local note_val = utils.percentageChance(20) and 
           (voices[voice]["note"] + utils.randomOctave()) or 
           voices[voice]["note"]
-        play_note(
+        note_utils.play_note(
           note_val, 
           vel, 
           params:get('hs_v'..voice..'_channel'),
@@ -99,36 +67,65 @@ function play_sequence(seq, voice, vel)
   end
 end
 
-function release_note(k)
-  clock.cancel(voices[k]["clock"])
-  voices[k]["available"] = true
-  voices[k]["note"] = nil
-  voices[k]["hold_release"] = nil
-  voice_status[k] = 0
-  redraw()
-end
-
 function hold_release()
   for k, v in pairs(voices) do
     if v["hold_release"] == true then
-      release_note(k)
+      note_utils.release_note(k)
     end
   end
 end
 
--- midi things
+-- midi in 
 
 midi_event = function(data)
-  local d = midi.to_msg(data)
+  local m = midi.to_msg(data)
 
-  if d.type == "note_on" then
-    hs_midi.note_on(d)
-  elseif d.type == "note_off" then
-    hs_midi.note_off(d)
+  if m.type == "note_on" then
+    local voice_space = utils.find_empty_space(voices)
+
+    if voice_space ~= false then
+      local voice_sequence = sequences[params:get('hs_v'..voice_space..'_sequence')]
+      if voice_sequence.steps == nil then
+        local random_i = math.random(1, #sequences - 1)
+        voice_sequence = sequences[random_i]
+      end
+      voices[voice_space]["note"] = m.note
+      voices[voice_space]["available"] = false
+      voices[voice_space]["clock"] = clock.run(play_sequence, voices_equence.steps ,voice_space, m.vel)
+    end
+  elseif m.type == "note_off" then
+    for k, v in pairs(voices) do
+      if v["note"] == m.note then
+        if params:get('hs_hold') == 0 then
+          -- if hold isn't on, kill the voice
+          release_note(k)
+        else
+          -- or else mark the voice to be released when hold turned off
+          voices[k]["hold_release"] = true
+        end
+      end
+    end
   end
 end
 
 midi_in.event = midi_event
+
+-- toggle settings
+
+function toggle_shift()
+  shift = not shift
+  redraw()
+end
+
+function toggle_hold()
+  if params:get('hs_hold') == 1 then
+    params:set('hs_hold', 0)
+    hold_release()
+  else
+    params:set('hs_hold', 1)
+  end
+  redraw()
+end
 
 -- interface things
 
@@ -179,6 +176,6 @@ end
 
 function cleanup()
   params:write()
-  hs_midi.kill_all()
+  note_utils.kill_all()
   crow.ii.jf.mode(0)
 end
