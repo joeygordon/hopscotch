@@ -20,6 +20,7 @@ parameters = include 'lib/parameters'
 utils = include 'lib/utils'
 interface = include 'lib/interface'
 hs_midi = include 'lib/midi'
+hs_jf = include 'lib/crow'
 voices = include 'lib/voices'
 sequences = include 'lib/sequences'
 encoder_actions = include 'lib/encoder_actions'
@@ -54,18 +55,9 @@ function toggle_hold()
   redraw()
 end
 
-function toggle_output()
-  if params:get('hs_output') == 1 then
-    params:set('hs_output', 2)
-  else
-    params:set('hs_output', 1)
-  end 
-  redraw()
-end
-
 -- play sounds
 
-function play_note(note, vel, channel)
+function play_note(note, vel, channel, voice)
   if params:get('hs_output') == 1 then
     -- midi output
     hs_midi.play(note, vel, channel)
@@ -73,6 +65,9 @@ function play_note(note, vel, channel)
     -- internal output
     engine.amp(vel / 127)
     engine.hz(music.note_num_to_freq(note))
+  elseif params:get('hs_output') == 3 then
+    -- JF output
+    hs_jf.play(note, vel, voice)
   end
 end
 
@@ -86,7 +81,8 @@ function play_sequence(seq, voice, vel)
         play_note(
           note_val, 
           vel, 
-          params:get('hs_v'..voice..'_channel')
+          params:get('hs_v'..voice..'_channel'),
+          voice
         )
         voice_status[voice] = 1
       else
@@ -184,4 +180,5 @@ end
 function cleanup()
   params:write()
   hs_midi.kill_all()
+  crow.ii.jf.mode(0)
 end

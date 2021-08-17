@@ -2,7 +2,7 @@
 
 local hs_midi = {}
 
-function kill_note(note, vel, channel)
+local function kill_note(note, vel, channel)
   clock.sleep(
     (clock.get_beat_sec() / clock_div_values[params:get('hs_clock_division')]) * 
     gate_values[params:get('hs_gate_length')]
