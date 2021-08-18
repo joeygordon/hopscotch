@@ -148,7 +148,7 @@ function redraw()
     interface.draw_gate()
     interface.draw_hold()
     interface.draw_activity()
-    if shift == true then
+    if shift == true and params:get('hs_output') == 1 then
       interface.draw_channels()
     else
       interface.draw_sequences()

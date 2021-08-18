@@ -1,7 +1,7 @@
 -- things that help with managing the state of notes
 
-hs_midi = include 'lib/midi'
-hs_jf = include 'lib/crow'
+local hs_midi = include 'lib/midi'
+local hs_crow = include 'lib/crow'
 
 local note_utils = {}
 
@@ -24,7 +24,7 @@ function note_utils.play_note(note, vel, channel, voice)
     engine.hz(music.note_num_to_freq(note))
   elseif params:get('hs_output') == 3 then
     -- JF output
-    hs_jf.play(note, vel, voice)
+    hs_crow.jf_play(note, vel, voice)
   end
 end
 
@@ -36,7 +36,7 @@ function note_utils.kill_all()
       if params:get('hs_output') == 1 then
         hs_midi.kill_note(v.note, 100, params:get('hs_v'..k..'_channel'), true)
       elseif params:get('hs_output') == 3 then
-        hs_jf.kill_note(v.note, params:get('hs_v'..k..'_channel'), true)
+        hs_crow.jf_kill_note(v.note, params:get('hs_v'..k..'_channel'), true)
       end
     end
   end
