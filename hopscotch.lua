@@ -9,7 +9,7 @@
 --
 -- -------------------------------
 --
--- v1.0.0 by @joeygordon
+-- v1.1.0 by @joeygordon
 
 engine.name = 'PolyPerc'
 
@@ -37,7 +37,7 @@ clock_div_values = {32, 16, 12, 8, 6, 4, 3, 2, 1}
 gate_options = {'10%', '25%', '33%', '50%', '66%', '75%', '90%', '100%'}
 gate_values = {0.10, 0.25, 0.333, 0.5, 0.666, 0.75, 0.9, 1}
 
--- manage sounds state
+-- manage sequence state
 
 function play_sequence(seq, voice, vel)
   while true do
@@ -46,12 +46,14 @@ function play_sequence(seq, voice, vel)
         local note_val = utils.percentageChance(20) and 
           (voices[voice]["note"] + utils.randomOctave()) or 
           voices[voice]["note"]
+
         note_utils.play_note(
           note_val, 
           vel, 
           params:get('hs_v'..voice..'_channel'),
           voice
         )
+
         voice_status[voice] = 1
       else
         voice_status[voice] = 0
@@ -151,10 +153,6 @@ function redraw()
     else
       interface.draw_sequences()
     end
-
-  -- settings screen
-  elseif pages.index == 2 then
-    interface.draw_settings()
   end
 
   screen.update()
@@ -167,7 +165,6 @@ function init()
   norns.enc.sens(2,16)
   norns.enc.sens(3,16)
 
-  -- load params
   parameters.init()
   
   midi_in = midi.connect(params:get('hs_midi_input'))
