@@ -18,7 +18,7 @@ You can choose input and output devices in the params menu
 #### Currently supported output devices
 - MIDI out
 - Internal norns out (for now)
-- Just Friends via [Crow](https://monome.org/crow/) (only supports 6 voices)
+- Just Friends via [Crow](https://monome.org/#crow) (only supports 6 voices)
 
 ### Select a Sequence
 
