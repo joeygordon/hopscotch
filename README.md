@@ -4,7 +4,7 @@
 
 ![](img/hopscotch.png)
 
-## Using Hopscotch
+## Using Hopscotch?
 
 Play some notes with a MIDI input device and Hopscotch will map each note to its own selectable rhythm sequence. There is a 20% chance that the note will play 1 octave higher or lower when it is triggered. The output can be sent to a variety of devices. If using MIDI out, each of the 8 voices can be sent to any MIDI channel. Voices are assigned in the order that they are played, with each new note taking the first available space.
 
