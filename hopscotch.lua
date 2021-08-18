@@ -93,14 +93,14 @@ midi_event = function(data)
       end
       voices[voice_space]["note"] = m.note
       voices[voice_space]["available"] = false
-      voices[voice_space]["clock"] = clock.run(play_sequence, voices_equence.steps ,voice_space, m.vel)
+      voices[voice_space]["clock"] = clock.run(play_sequence, voice_sequence.steps ,voice_space, m.vel)
     end
   elseif m.type == "note_off" then
     for k, v in pairs(voices) do
       if v["note"] == m.note then
         if params:get('hs_hold') == 0 then
           -- if hold isn't on, kill the voice
-          release_note(k)
+          note_utils.release_note(k)
         else
           -- or else mark the voice to be released when hold turned off
           voices[k]["hold_release"] = true

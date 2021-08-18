@@ -3,6 +3,7 @@
 local hs_midi = {}
 
 function hs_midi.kill_note(note, vel, channel, skip_clock)
+  skip_clock = skip_clock or false
   if skip_clock == false then
     clock.sleep(
       (clock.get_beat_sec() / clock_div_values[params:get('hs_clock_division')]) * 

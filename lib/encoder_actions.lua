@@ -17,7 +17,7 @@ function encoder_actions.init(n,d)
 
   -- choose sequence/channel
   if n == 3 then
-    if shift == true then
+    if shift == true and params:get('hs_output') == 1 then
       params:set(
         "hs_v"..selected.."_channel", 
         util.clamp(params:get("hs_v"..selected.."_channel") + d, 1, 16)
@@ -33,12 +33,10 @@ function encoder_actions.init(n,d)
         util.clamp(params:get("hs_clock_division") + d, 1, #clock_div_options)
       )
     else
-      if params:get("hs_output") == 1 then
-        params:set(
-          "hs_gate_length",
-          util.clamp(params:get("hs_gate_length") + d, 1, #gate_options)
-        )
-      end
+      params:set(
+        "hs_gate_length",
+        util.clamp(params:get("hs_gate_length") + d, 1, #gate_options)
+      )
     end
   end
 
