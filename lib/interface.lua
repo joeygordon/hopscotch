@@ -107,21 +107,4 @@ function interface.draw_activity()
   end
 end
 
-function interface.draw_settings()
-  screen.move(screen_x_mult * 1,screen_y)
-    if shift == true then
-      screen.text("shifting")
-    else
-      screen.text("settings screen")
-    end
-    glyphs.a(10,15)
-    glyphs.b(18,15)
-    glyphs.c(26,15)
-    glyphs.d(34,15)
-    glyphs.e(42,15)
-    glyphs.f(50,15)
-    glyphs.g(58,15)
-    glyphs.h(66,15)
-end
-
 return interface

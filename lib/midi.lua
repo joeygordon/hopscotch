@@ -2,56 +2,22 @@
 
 local hs_midi = {}
 
-function kill_note(note, vel, channel)
-  clock.sleep(
-    (clock.get_beat_sec() / clock_div_values[params:get('hs_clock_division')]) * 
-    gate_values[params:get('hs_gate_length')]
-  )
+function hs_midi.kill_note(note, vel, channel, skip_clock)
+  skip_clock = skip_clock or false
+  if skip_clock == false then
+    clock.sleep(
+      (clock.get_beat_sec() / clock_div_values[params:get('hs_clock_division')]) * 
+      gate_values[params:get('hs_gate_length')]
+    )
+  end
+
   midi_out:note_off(note, vel, channel)
 end
 
 function hs_midi.play(note, vel, channel)
   midi_out:note_on(note, vel, channel)
-  clock.run(kill_note, note, vel, channel)
+  clock.run(hs_midi.kill_note, note, vel, channel)
 end
 
-function hs_midi.kill_all()
-  for k, v in pairs(voices) do
-    if v.available == false then
-      clock.cancel(voices[k]["clock"])
-      voices[k].available = true
-      midi_out:note_off(v.note, 100, params:get('hs_v'..k..'_channel'))
-    end
-  end
-end
-
-function hs_midi.note_on(d)
-  local voice_space = utils.find_empty_space(voices)
-
-  if voice_space ~= false then
-    voice_sequence = sequences[params:get('hs_v'..voice_space..'_sequence')]
-    if voice_sequence.steps == nil then
-      local random_i = math.random(1, #sequences - 1)
-      voice_sequence = sequences[random_i]
-    end
-    voices[voice_space]["note"] = d.note
-    voices[voice_space]["available"] = false
-    voices[voice_space]["clock"] = clock.run(play_sequence, voice_sequence.steps ,voice_space, d.vel)
-    end
-end
-
-function hs_midi.note_off(d)
-  for k, v in pairs(voices) do
-    if v["note"] == d.note then
-      if params:get('hs_hold') == 0 then
-        -- if hold isn't on, kill the voice
-        release_note(k)
-      else
-        -- or else mark the voice to be released when hold turned off
-        voices[k]["hold_release"] = true
-      end
-    end
-  end
-end
 
 return hs_midi
