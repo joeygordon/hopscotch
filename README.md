@@ -13,7 +13,7 @@ Play some notes with a MIDI input device and Hopscotch will map each note to its
 - MIDI device to input notes
 - A supported output device (see below)
 
-You can choose input and output devices in the params menu
+You can choose input and output devices in the params menu.
 
 #### Currently supported output devices
 - MIDI out
